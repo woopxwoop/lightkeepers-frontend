@@ -20,23 +20,23 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-  node-version: 22
-  cache: pnpm
+          node-version: 22
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm i
 
       - name: build
         env:
-  BASE_PATH: '/${{ github.event.repository.name }}'
-  run: |
-    pnpm run build
+          BASE_PATH: '/${{ github.event.repository.name }}'
+        run: | 
+          pnpm run build
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
  # this should match the `pages` option in your adapter-static options
-  path: 'build/'
+          path: 'build/'
 
   deploy:
     needs: build_site
