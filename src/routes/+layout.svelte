@@ -31,6 +31,10 @@
 		console.log(`toggle ${c?.name}`);
 	}
 
+	function saveCharacters() {
+		
+	}
+
 	// paths
 	const homePath = resolve("/");
 	const abyssPath = resolve("/abyss");
@@ -60,6 +64,7 @@
 			</button>
 		</div>
 	{/each}
+	<button onclick={() => saveCharacters()}> Save Characters </button>
 </aside>
 
 {@render children()}
