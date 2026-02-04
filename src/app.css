@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root {
+  --background-color: #eeeeffff;
+  --foreground-color: #001e33ff;
+  --secondary-color: #314bceff;
+}
+
+/* Dark theme variables */
+[data-theme="dark"] {
+  --background-color: #001e33ff;
+  --foreground-color: #eeeeffff;
+  --secondary-color: #9071e7ff;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--foreground-color);
+  transition:
+    background-color 0.3s,
+    color 0.3s; /* Smooth transition */
+}
+
+h1 {
+  font-size: clamp(0.5rem /* 8px */, 3vw + 0.25rem /* 4px */, 6rem /* 96px */);
+}
+
+h2 {
+  font-size: clamp(
+    0.5rem /* 8px */,
+    1.5vw + 0.2rem /* 3.2px */,
+    4rem /* 64px */
+  );
+}
+
+p {
+  font-size: clamp(
+    0.5rem /* 8px */,
+    1.25vw + 0.2rem /* 3.2px */,
+    4rem /* 64px */
+  );
+}
+
+@layer components {
+  .secondary-color {
+    @apply text-(--secondary-color);
+  }
+
+  .tertiary-color {
+    @apply text-(--tertiary-color);
+  }
+}

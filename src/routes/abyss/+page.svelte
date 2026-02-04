@@ -2,7 +2,15 @@
   import { onMount } from "svelte";
   import { db } from "$lib/supabaseClient";
   import type { Tables } from "$lib/types/database.types";
+  import {
+    charactersOwned,
+    teamsOwned,
+    teamsOwnedTop,
+    teamsOwnedBottom,
+  } from "$lib/stores";
 
+  type Character = Tables<"characters">;
+  type CharacterOwned = Character & { isOwned: boolean };
   type Team = Tables<"top_100_abyss_teams">;
   type CharacterMapping = Tables<"url_to_character_mapping">;
 
@@ -13,61 +21,48 @@
   let loading = $state(true);
   let error: string | null = $state(null);
 
-  $inspect(teams);
-
-  onMount(async () => {
-    try {
-      // await getCharacterMapping();
-      await getTopAbyssTeams();
-    } catch (err) {
-      error = err instanceof Error ? err.message : "An unknown error occurred";
-      console.error("Error in onMount:", err);
-    }
-    loading = false;
+  $effect(() => {
+    loading = $teamsOwnedTop.length == 0 || $teamsOwnedBottom.length == 0;
   });
-
-  const getCharacterMapping = async () => {
-    const { data, error: err } = await db
-      .from("url_to_character_mapping")
-      .select("*");
-    if (err) {
-      throw new Error(err.message);
-    } else {
-      let arr = data as CharacterMapping[];
-      arr.forEach((m) => {
-        mapping.set(m.character_name, m.url);
-      });
-    }
-  };
-
-  const getTopAbyssTeams = async () => {
-    const { data, error: err } = await db
-      .from("top_100_abyss_teams")
-      .select("*")
-      .order("usage_total", { ascending: false });
-    if (err) {
-      throw new Error(err.message);
-    } else {
-      teams = data;
-    }
-  };
 </script>
 
-<p>This is where the abyss page is</p>
-
-{#if loading}
-  <p>loading</p>
-{:else if error}
-  <p>{error}</p>
-{:else}
-  <p>got teams</p>
-  <ul>
-    {#each teams as team}
-      <li>
-        {#each team.members as member}
-          <img src={mapping.get(member) ?? ""} alt="character portrait" />
-        {/each}
-      </li>
-    {/each}
-  </ul>
-{/if}
+<main>
+  {#if loading}
+    <div>loading teams data</div>
+  {:else}
+    <div class="grid grid-cols-2 gap-10">
+      <div class="col-span-1">
+        <h1>Top Half Teams</h1>
+        <ul>
+          {#each ($teamsOwnedTop ?? []).slice(0, 25) as team}
+            <li class="grid grid-cols-4">
+              {#each team.members as member}
+                <img
+                  src={mapping.get(member) ?? ""}
+                  alt="character portrait"
+                  class="inline-block col-span-1"
+                />
+              {/each}
+            </li>
+          {/each}
+        </ul>
+      </div>
+      <div class="col-span-1">
+        <h1>Bottom Half Teams</h1>
+        <ul>
+          {#each ($teamsOwnedBottom ?? []).slice(0, 25) as team}
+            <li class="grid grid-cols-4">
+              {#each team.members as member}
+                <img
+                  src={mapping.get(member) ?? ""}
+                  alt="character portrait"
+                  class="inline-block col-span-1"
+                />
+              {/each}
+            </li>
+          {/each}
+        </ul>
+      </div>
+    </div>
+  {/if}
+</main>

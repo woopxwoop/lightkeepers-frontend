@@ -14,10 +14,11 @@ export async function load() {
   let characters: Character[] = [];
 
   const getCharacterMapping = async () => {
-    console.log("getting mapping");
+    // console.log("getting mapping");
     const { data, error: err } = await db
       .from("url_to_character_mapping")
       .select("*");
+
     if (err) {
       throw new Error(err.message);
     } else {
@@ -31,8 +32,11 @@ export async function load() {
   };
 
   const getCharacterData = async () => {
-    console.log("getting data");
-    const { data, error: err } = await db.from("characters").select("*");
+    // console.log("getting data");
+    const { data, error: err } = await db
+      .from("characters")
+      .select("*")
+      .order("name", { ascending: true });
     if (err) {
       throw new Error(err.message);
     } else {
