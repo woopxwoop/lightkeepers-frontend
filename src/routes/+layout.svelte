@@ -11,6 +11,8 @@
 
   let characters: Character[] = $derived(data.characters);
 
+  $inspect($charactersOwned);
+
   onMount(async () => {
     let cachedCharactersOwnedJSON = localStorage.getItem("charactersOwned");
     let cachedCharactersOwned: CharacterOwned[] | undefined =
@@ -21,9 +23,7 @@
     if (cachedCharactersOwned) {
       // add characters not in the cache
       let finalList: CharacterOwned[] = characters.map((c) => {
-        let cachedChar = cachedCharactersOwned.find((c2) => {
-          c2.id === c.id;
-        });
+        let cachedChar = cachedCharactersOwned.find((c2) => c2.id === c.id);
 
         if (cachedChar) return cachedChar;
         else {
