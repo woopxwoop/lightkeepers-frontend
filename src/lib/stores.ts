@@ -10,7 +10,7 @@ export const teamsOwnedTop = derived<Writable<Team[]>, Team[]>(
   ($teamsOwned) => {
     return $teamsOwned.filter(
       (team) =>
-        (team.usage_rate_top ?? 0 > 40) && (team.members ?? []).length == 4,
+        (team.usage_rate_top ?? 0) > 40 && (team.members ?? []).length == 4,
     );
   },
 );
@@ -20,7 +20,7 @@ export const teamsOwnedBottom = derived<Writable<Team[]>, Team[]>(
   ($teamsOwned) => {
     return $teamsOwned.filter(
       (team) =>
-        (team.usage_rate_bottom ?? 0 > 40) && (team.members ?? []).length == 4,
+        (team.usage_rate_bottom ?? 0) > 40 && (team.members ?? []).length == 4,
     );
   },
 );
