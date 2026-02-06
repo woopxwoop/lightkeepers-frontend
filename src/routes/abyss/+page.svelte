@@ -1,11 +1,17 @@
 <script lang="ts">
   import CharacterIcon from "$lib/components/CharacterIcon.svelte";
+  import Team from "$lib/components/Team.svelte";
   import { teamsOwnedTop, teamsOwnedBottom } from "$lib/stores";
 
   let { data } = $props();
 
   let mapping: Map<string, string> = $derived(data.mapping);
   let loading = $state(true);
+
+  let showTop = $state(true);
+  function switchTab(tab: string) {
+    showTop = !showTop;
+  }
 
   $effect(() => {
     loading = $teamsOwnedTop.length == 0 || $teamsOwnedBottom.length == 0;
@@ -16,50 +22,48 @@
   {#if loading}
     <div>loading teams data</div>
   {:else}
-    <div class="grid grid-cols-2 gap-x-10 w-full text-center">
-      <div class="flex col-span-1 justify-center flex-col">
-        <h1>Top Half Teams</h1>
-        <ul class="grid grid-cols-1 gap-y-4">
-          {#each ($teamsOwnedTop ?? []).slice(0, 25) as team}
-            <li
-              class="grid grid-cols-4 gap-x-2 border rounded-xl p-2 bg-(--foreground-color)"
-            >
-              {#each team.members as member}
-                <div
-                  class="bg-(--intermediate-color) rounded-xl overflow-hidden"
-                >
-                  <CharacterIcon
-                    name={member}
-                    icon={mapping.get(member) ?? null}
-                    rarity={null}
-                  />
-                </div>
-              {/each}
-            </li>
-          {/each}
-        </ul>
+    <div class="w-full flex flex-col justify-center items-center">
+      <div class="md:hidden w-full flex flex-row text-center">
+        <button
+          class="flex-1 cursor-pointer rounded-t-xl"
+          onclick={() => switchTab("top")}
+          class:invert-theme={showTop}>Top</button
+        >
+        <button
+          class="flex-1 cursor-pointer rounded-t-xl"
+          onclick={() => switchTab("bot")}
+          class:invert-theme={!showTop}>Bottom</button
+        >
       </div>
-      <div class="flex col-span-1 justify-center flex-col">
-        <h1>Bottom Half Teams</h1>
-        <ul class="grid grid-cols-1 gap-y-4">
-          {#each ($teamsOwnedBottom ?? []).slice(0, 25) as team}
-            <li
-              class="grid grid-cols-4 gap-x-2 border rounded-xl p-2 bg-(--foreground-color)"
-            >
-              {#each team.members as member}
-                <div
-                  class="bg-(--intermediate-color) rounded-xl overflow-hidden"
-                >
-                  <CharacterIcon
-                    name={member}
-                    icon={mapping.get(member) ?? null}
-                    rarity={null}
-                  />
-                </div>
-              {/each}
-            </li>
-          {/each}
-        </ul>
+
+      <div class="hidden md:flex w-full flex-row text-center mb-2">
+        <h2 class="flex-1">Top</h2>
+        <h2 class="flex-1">Bottom</h2>
+      </div>
+
+      <div
+        class="grid md:grid-cols-2 gap-x-10 w-full text-center place-items-start"
+      >
+        <div
+          class="md:flex col-span-1 justify-center flex-col bg-(--foreground-color)"
+          class:hidden={!showTop}
+        >
+          <div class="grid grid-cols-1 gap-y-2">
+            {#each ($teamsOwnedTop ?? []).slice(0, 25) as team}
+              <Team {team} {mapping} />
+            {/each}
+          </div>
+        </div>
+        <div
+          class="md:flex col-span-1 justify-center flex-col bg-(--foreground-color)"
+          class:hidden={showTop}
+        >
+          <div class="grid grid-cols-1 gap-y-2">
+            {#each ($teamsOwnedBottom ?? []).slice(0, 25) as team}
+              <Team {team} {mapping} />
+            {/each}
+          </div>
+        </div>
       </div>
     </div>
   {/if}

@@ -1,15 +1,10 @@
 import { writable, derived, type Writable } from "svelte/store";
 import { db } from "$lib/supabaseClient";
-import type {
-  Character,
-  CharacterOwned,
-  AbyssTeam,
-  StygianTeam,
-} from "$lib/definitions";
+import type { CharacterOwned, AbyssTeam, StygianTeam } from "$lib/definitions";
 
+//#region abyss
 export const charactersOwned = writable<CharacterOwned[]>([]);
 export const teamsOwned = writable<AbyssTeam[]>([]);
-
 export const teamsOwnedTop = derived<Writable<AbyssTeam[]>, AbyssTeam[]>(
   teamsOwned,
   ($teamsOwned) => {
@@ -19,7 +14,6 @@ export const teamsOwnedTop = derived<Writable<AbyssTeam[]>, AbyssTeam[]>(
     );
   },
 );
-
 export const teamsOwnedBottom = derived<Writable<AbyssTeam[]>, AbyssTeam[]>(
   teamsOwned,
   ($teamsOwned) => {
@@ -29,7 +23,6 @@ export const teamsOwnedBottom = derived<Writable<AbyssTeam[]>, AbyssTeam[]>(
     );
   },
 );
-
 export async function writeTopAbyssTeamsOwned(
   charactersOwned: CharacterOwned[],
 ) {
@@ -48,9 +41,10 @@ export async function writeTopAbyssTeamsOwned(
     teamsOwned.set(data ?? []);
   }
 }
+//#endregion
 
+//#region stygian
 export const teamsOwnedStygian = writable<StygianTeam[]>([]);
-
 export const teamsOwnedStygianTop = derived<
   Writable<StygianTeam[]>,
   StygianTeam[]
@@ -60,7 +54,6 @@ export const teamsOwnedStygianTop = derived<
       (team.usage_rate_top ?? 0) > 40 && (team.members ?? []).length == 4,
   );
 });
-
 export const teamsOwnedStygianMiddle = derived<
   Writable<StygianTeam[]>,
   StygianTeam[]
@@ -70,7 +63,6 @@ export const teamsOwnedStygianMiddle = derived<
       (team.usage_rate_middle ?? 0) > 40 && (team.members ?? []).length == 4,
   );
 });
-
 export const teamsOwnedStygianBottom = derived<
   Writable<StygianTeam[]>,
   StygianTeam[]
@@ -80,7 +72,6 @@ export const teamsOwnedStygianBottom = derived<
       (team.usage_rate_bottom ?? 0) > 40 && (team.members ?? []).length == 4,
   );
 });
-
 export async function writeTopStygianTeamsOwned(
   charactersOwned: CharacterOwned[],
 ) {
@@ -99,3 +90,4 @@ export async function writeTopStygianTeamsOwned(
     teamsOwnedStygian.set(data ?? []);
   }
 }
+//#endregion

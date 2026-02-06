@@ -72,7 +72,7 @@
 
 <div class="w-full flex flex-col items-center">
   <nav
-    class="w-[60%] flex flex-row justify-center gap-4 text-3xl rounded-3xl border-(--foreground-color) border-2 mt-4 p-2"
+    class="w-[60%] flex flex-row justify-center gap-4 text-3xl rounded-3xl border-(--foreground-color) border-2 mt-4 mb-4 p-2"
   >
     <a href={homePath} aria-current={page.url.pathname === homePath}> Home </a>
     <a href={abyssPath} aria-current={page.url.pathname === abyssPath}>

@@ -52,6 +52,7 @@ export async function load() {
       await getCharacterData();
     } catch (e) {
       console.log("unexpected error");
+      console.log(e);
     }
   }
 

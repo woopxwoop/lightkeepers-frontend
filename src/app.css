@@ -54,4 +54,9 @@ a {
   .tertiary-color {
     @apply text-(--tertiary-color);
   }
+
+  .invert-theme {
+    @apply text-(--background-color);
+    @apply bg-(--foreground-color);
+  }
 }
