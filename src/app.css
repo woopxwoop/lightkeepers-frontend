@@ -37,7 +37,8 @@ h2 {
   );
 }
 
-p {
+p,
+a {
   font-size: clamp(
     0.5rem /* 8px */,
     1.25vw + 0.2rem /* 3.2px */,
