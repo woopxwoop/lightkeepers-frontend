@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Character } from "$lib/definitions";
+  import avatarImg from "$lib/assets/default-avatar.jpg";
   let {
     icon,
     name,
@@ -8,5 +8,5 @@
 </script>
 
 <div>
-  <img src={icon ?? "add default src here"} alt={name} />
+  <img src={icon ?? avatarImg} alt={name} />
 </div>

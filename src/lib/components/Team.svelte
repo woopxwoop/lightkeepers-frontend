@@ -1,5 +1,7 @@
 <script lang="ts">
   import CharacterIcon from "$lib/components/CharacterIcon.svelte";
+  import avatarImg from "$lib/assets/default-avatar.jpg";
+
   import type { AbyssTeam, StygianTeam } from "$lib/definitions";
   let {
     team,
@@ -12,7 +14,7 @@
     <div class="bg-(--intermediate-color) rounded-xl overflow-hidden">
       <CharacterIcon
         name={member}
-        icon={mapping.get(member) ?? null}
+        icon={mapping.get(member) ?? avatarImg}
         rarity={null}
       />
     </div>
