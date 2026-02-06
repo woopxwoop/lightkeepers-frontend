@@ -67,13 +67,6 @@ export type Database = {
             referencedRelation: "abyss_teams";
             referencedColumns: ["id"];
           },
-          {
-            foreignKeyName: "abyss_team_members_team_id_fkey";
-            columns: ["team_id"];
-            isOneToOne: false;
-            referencedRelation: "top_100_abyss_teams";
-            referencedColumns: ["team_id"];
-          },
         ];
       };
       abyss_teams: {
@@ -115,6 +108,104 @@ export type Database = {
         };
         Relationships: [];
       };
+      stygian_team_members: {
+        Row: {
+          character_id: string;
+          team_id: string;
+        };
+        Insert: {
+          character_id: string;
+          team_id: string;
+        };
+        Update: {
+          character_id?: string;
+          team_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "stygian_team_members_character_id_fkey";
+            columns: ["character_id"];
+            isOneToOne: false;
+            referencedRelation: "characters";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "stygian_team_members_team_id_fkey";
+            columns: ["team_id"];
+            isOneToOne: false;
+            referencedRelation: "stygian_teams";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      stygian_team_stats: {
+        Row: {
+          team_id: string;
+          usage_rate_bottom: number | null;
+          usage_rate_middle: number | null;
+          usage_rate_top: number | null;
+          usage_total: number | null;
+          version_number: number;
+        };
+        Insert: {
+          team_id: string;
+          usage_rate_bottom?: number | null;
+          usage_rate_middle?: number | null;
+          usage_rate_top?: number | null;
+          usage_total?: number | null;
+          version_number: number;
+        };
+        Update: {
+          team_id?: string;
+          usage_rate_bottom?: number | null;
+          usage_rate_middle?: number | null;
+          usage_rate_top?: number | null;
+          usage_total?: number | null;
+          version_number?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "stygian_team_stats_team_id_fkey";
+            columns: ["team_id"];
+            isOneToOne: false;
+            referencedRelation: "stygian_teams";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      stygian_teams: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          team_key: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          team_key: string;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          team_key?: string;
+        };
+        Relationships: [];
+      };
+      stygian_versions: {
+        Row: {
+          version: string;
+          version_number: number;
+        };
+        Insert: {
+          version: string;
+          version_number: number;
+        };
+        Update: {
+          version?: string;
+          version_number?: number;
+        };
+        Relationships: [];
+      };
       team_stats: {
         Row: {
           team_id: string;
@@ -144,13 +235,6 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "abyss_teams";
             referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "team_stats_team_id_fkey";
-            columns: ["team_id"];
-            isOneToOne: false;
-            referencedRelation: "top_100_abyss_teams";
-            referencedColumns: ["team_id"];
           },
         ];
       };
@@ -189,8 +273,20 @@ export type Database = {
       top_100_abyss_teams: {
         Row: {
           members: string[] | null;
-          team_id: string | null;
+          team_key: string | null;
           usage_rate_bottom: number | null;
+          usage_rate_top: number | null;
+          usage_total: number | null;
+          version_number: number | null;
+        };
+        Relationships: [];
+      };
+      top_100_stygian_teams: {
+        Row: {
+          members: string[] | null;
+          team_key: string | null;
+          usage_rate_bottom: number | null;
+          usage_rate_middle: number | null;
           usage_rate_top: number | null;
           usage_total: number | null;
           version_number: number | null;
@@ -203,7 +299,7 @@ export type Database = {
         Args: { p_character_name: string; p_version_number: number };
         Returns: {
           members: string[];
-          team_id: string;
+          team_key: string;
           usage_rate_bottom: number;
           usage_rate_top: number;
           usage_total: number;
@@ -214,8 +310,20 @@ export type Database = {
         Args: { p_character_names: string[]; p_version_number: number };
         Returns: {
           members: string[];
-          team_id: string;
+          team_key: string;
           usage_rate_bottom: number;
+          usage_rate_top: number;
+          usage_total: number;
+          version_number: number;
+        }[];
+      };
+      get_teams_with_characters_subset_stygian: {
+        Args: { p_character_names: string[]; p_version_number: number };
+        Returns: {
+          members: string[];
+          team_key: string;
+          usage_rate_bottom: number;
+          usage_rate_middle: number;
           usage_rate_top: number;
           usage_total: number;
           version_number: number;
@@ -234,6 +342,11 @@ export type Database = {
         Returns: string;
       };
       upsert_abyss_teams_batch: {
+        Args: { p_teams: Json[] };
+        Returns: undefined;
+      };
+      upsert_characters: { Args: { p_characters: Json }; Returns: undefined };
+      upsert_stygian_teams_batch: {
         Args: { p_teams: Json[] };
         Returns: undefined;
       };

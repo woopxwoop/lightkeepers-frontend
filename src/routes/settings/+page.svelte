@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { charactersOwned, writeTopAbyssTeamsOwned } from "$lib/stores";
+  import {
+    charactersOwned,
+    writeTopAbyssTeamsOwned,
+    writeTopStygianTeamsOwned,
+  } from "$lib/stores";
   import { onMount } from "svelte";
   import CharacterIcon from "$lib/components/CharacterIcon.svelte";
   import type { CharacterOwned } from "$lib/definitions";
@@ -29,6 +33,7 @@
     );
     charactersOwned.set(tempCharactersOwned);
     writeTopAbyssTeamsOwned($charactersOwned);
+    writeTopStygianTeamsOwned($charactersOwned);
     showSaved = true;
 
     // ADD SUCCESS INDICATOR

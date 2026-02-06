@@ -2,7 +2,11 @@
   import favicon from "$lib/assets/favicon.svg";
   import { page } from "$app/state";
   import { resolve } from "$app/paths";
-  import { charactersOwned, writeTopAbyssTeamsOwned } from "$lib/stores";
+  import {
+    charactersOwned,
+    writeTopAbyssTeamsOwned,
+    writeTopStygianTeamsOwned,
+  } from "$lib/stores";
   import { onMount } from "svelte";
   import type { Character, CharacterOwned } from "$lib/definitions";
   import "../app.css";
@@ -52,11 +56,13 @@
       );
     }
     await writeTopAbyssTeamsOwned($charactersOwned);
+    await writeTopStygianTeamsOwned($charactersOwned);
   });
 
   // paths
   const homePath = resolve("/");
   const abyssPath = resolve("/abyss");
+  const stygianPath = resolve("/stygian");
   const settingsPath = resolve("/settings");
 </script>
 
@@ -71,6 +77,9 @@
     <a href={homePath} aria-current={page.url.pathname === homePath}> Home </a>
     <a href={abyssPath} aria-current={page.url.pathname === abyssPath}>
       Abyss
+    </a>
+    <a href={stygianPath} aria-current={page.url.pathname === stygianPath}>
+      Stygian
     </a>
     <a href={settingsPath} aria-current={page.url.pathname === settingsPath}>
       Settings
