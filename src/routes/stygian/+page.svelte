@@ -57,34 +57,34 @@
         <button
           class="flex-1 cursor-pointer rounded-t-xl"
           onclick={() => switchTab("top")}
-          class:invert-theme={showTop}>Top</button
+          class:invert-theme={showTop}>Field 1</button
         >
         <button
           class="flex-1 cursor-pointer rounded-t-xl"
           onclick={() => switchTab("mid")}
-          class:invert-theme={showMid}>Middle</button
+          class:invert-theme={showMid}>Field 2</button
         >
         <button
           class="flex-1 cursor-pointer rounded-t-xl"
           onclick={() => switchTab("bot")}
-          class:invert-theme={showBot}>Bottom</button
+          class:invert-theme={showBot}>Field 3</button
         >
       </div>
 
-      <div class="hidden lg:flex w-full flex-row text-center mb-2">
-        <h2 class="flex-1">Top</h2>
-        <h2 class="flex-1">Middle</h2>
-        <h2 class="flex-1">Bottom</h2>
+      <div class="hidden lg:flex w-full flex-row text-center mb-2 gap-x-10">
+        <h2 class="flex-1">Field 1</h2>
+        <h2 class="flex-1">Field 2</h2>
+        <h2 class="flex-1">Field 3</h2>
       </div>
 
       <div
-        class="grid lg:grid-cols-3 gap-x-4 lg:gap-x-10 w-full text-center place-items-start"
+        class="grid lg:grid-cols-3 gap-x-10 w-full text-center place-items-start"
       >
         <div
           class="lg:flex col-span-1 justify-center flex-col bg-(--foreground-color)"
           class:hidden={!showTop}
         >
-          <div class="grid grid-cols-1 gap-y-4">
+          <div class="grid grid-cols-1 gap-y-1">
             {#each ($teamsOwnedStygianTop ?? []).slice(0, 25) as team}
               <Team {team} {mapping}></Team>
             {/each}
@@ -94,7 +94,7 @@
           class="lg:flex col-span-1 justify-center flex-col bg-(--foreground-color)"
           class:hidden={!showMid}
         >
-          <div class="grid grid-cols-1 gap-y-4">
+          <div class="grid grid-cols-1 gap-y-1">
             {#each ($teamsOwnedStygianMiddle ?? []).slice(0, 25) as team}
               <Team {team} {mapping}></Team>
             {/each}
@@ -104,7 +104,7 @@
           class="lg:flex col-span-1 justify-center flex-col bg-(--foreground-color)"
           class:hidden={!showBot}
         >
-          <div class="grid grid-cols-1 gap-y-4">
+          <div class="grid grid-cols-1 gap-y-1">
             {#each ($teamsOwnedStygianBottom ?? []).slice(0, 25) as team}
               <Team {team} {mapping}></Team>
             {/each}

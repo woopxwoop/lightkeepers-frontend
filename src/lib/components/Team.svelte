@@ -9,9 +9,13 @@
   }: { team: AbyssTeam | StygianTeam; mapping: Map<string, string> } = $props();
 </script>
 
-<div class="grid grid-cols-4 gap-x-2 md:gap-x-4 border p-2 rounded-xl">
+<div
+  class="grid grid-cols-4 gap-x-1 md:gap-x-2 border p-1 rounded-xl bg-black/30 backdrop-blur-sm"
+>
   {#each team.members as member}
-    <div class="bg-(--intermediate-color) rounded-xl overflow-hidden">
+    <div
+      class="rounded-xl overflow-hidden border-2 border-(--foreground-color) bg-gray-700"
+    >
       <CharacterIcon
         name={member}
         icon={mapping.get(member) ?? avatarImg}

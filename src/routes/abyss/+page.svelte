@@ -27,18 +27,18 @@
         <button
           class="flex-1 cursor-pointer rounded-t-xl"
           onclick={() => switchTab("top")}
-          class:invert-theme={showTop}>Top</button
+          class:invert-theme={showTop}>Top Side</button
         >
         <button
           class="flex-1 cursor-pointer rounded-t-xl"
           onclick={() => switchTab("bot")}
-          class:invert-theme={!showTop}>Bottom</button
+          class:invert-theme={!showTop}>Bottom Side</button
         >
       </div>
 
-      <div class="hidden md:flex w-full flex-row text-center mb-2">
-        <h2 class="flex-1">Top</h2>
-        <h2 class="flex-1">Bottom</h2>
+      <div class="hidden md:flex w-full flex-row text-center mb-2 gap-x-10">
+        <h2 class="flex-1">Top Side</h2>
+        <h2 class="flex-1">Bottom Side</h2>
       </div>
 
       <div
@@ -48,7 +48,7 @@
           class="md:flex col-span-1 justify-center flex-col bg-(--foreground-color)"
           class:hidden={!showTop}
         >
-          <div class="grid grid-cols-1 gap-y-2">
+          <div class="grid grid-cols-1 gap-y-1">
             {#each ($teamsOwnedTop ?? []).slice(0, 25) as team}
               <Team {team} {mapping} />
             {/each}
@@ -58,7 +58,7 @@
           class="md:flex col-span-1 justify-center flex-col bg-(--foreground-color)"
           class:hidden={showTop}
         >
-          <div class="grid grid-cols-1 gap-y-2">
+          <div class="grid grid-cols-1 gap-y-1">
             {#each ($teamsOwnedBottom ?? []).slice(0, 25) as team}
               <Team {team} {mapping} />
             {/each}

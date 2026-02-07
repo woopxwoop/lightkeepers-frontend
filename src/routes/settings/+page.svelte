@@ -74,13 +74,15 @@
   </div>
 
   {#if synced}
-    <div class="w-full grid grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-4">
+    <div
+      class="w-full grid grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-4"
+    >
       {#if show4Stars}
         {#each tempCharactersOwned as character (character.id)}
           <div>
             <button
               onclick={() => toggleOwned(character.id)}
-              class="padding-0 cursor-pointer border-(--foreground-color) border-2 rounded-2xl w-full overflow-hidden relative hover:-translate-y-2 duration-75"
+              class="padding-0 cursor-pointer border-(--foreground-color) border-2 rounded-xl w-full overflow-hidden relative hover:-translate-y-2 duration-75"
               class:opacity-50={!character.isOwned}
             >
               <CharacterIcon
@@ -96,7 +98,7 @@
           <div>
             <button
               onclick={() => toggleOwned(character.id)}
-              class="bg-(--background-color) padding-0 cursor-pointer border-(--foreground-color) border-2 rounded-2xl w-full overflow-hidden relative hover:-translate-y-2 duration-75"
+              class="bg-(--background-color) padding-0 cursor-pointer border-(--foreground-color) border-2 rounded-xl w-full overflow-hidden relative hover:-translate-y-2 duration-75"
               class:opacity-50={!character.isOwned}
             >
               <CharacterIcon
