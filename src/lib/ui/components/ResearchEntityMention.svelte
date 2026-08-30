@@ -1,7 +1,7 @@
 <script lang="ts">
   /**
    * Quiet inline research entity (icon + label) with Builds-style tooltips.
-   * Trigger is a non-link `span.group` so HoverTooltip click→sheet matches equip tiles;
+   * Native button trigger so HoverTooltip is keyboard-focusable (Enter/Space);
    * character deep-links live inside the tip.
    */
   import {
@@ -27,7 +27,10 @@
   );
 </script>
 
-<span class="research-entity group relative research-entity-{entity.type}">
+<button
+  type="button"
+  class="research-entity group relative research-entity-{entity.type}"
+>
   {#if icon}
     <img
       class="research-entity-icon"
@@ -61,7 +64,7 @@
       {/if}
     </HoverTooltip>
   {/if}
-</span>
+</button>
 
 <style>
   .research-entity {
@@ -73,6 +76,7 @@
     padding: 0;
     vertical-align: text-bottom;
     cursor: pointer;
+    font: inherit;
     color: var(--foreground-color);
     line-height: 1.2;
     white-space: nowrap;

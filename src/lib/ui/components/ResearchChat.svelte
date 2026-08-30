@@ -127,7 +127,25 @@
 
   let agentOk = $derived(proxyHealth?.agent.ok === true);
 
-  let canSend = $derived(!loading && draft.trim().length > 0);
+  let providerReady = $derived.by(() => {
+    if (!agentOk || !proxyHealth) return false;
+    if (
+      llmProvider === "deepseek" &&
+      proxyHealth.agent.deepseekConfigured === false
+    ) {
+      return false;
+    }
+    if (
+      llmProvider === "gemini" &&
+      proxyHealth.agent.geminiConfigured === false
+    ) {
+      return false;
+    }
+    return true;
+  });
+
+  let canAsk = $derived(providerReady && !loading);
+  let canSend = $derived(canAsk && draft.trim().length > 0);
 
   let healthLabel = $derived.by(() => {
     if (!proxyHealth) return "Checking agent…";
@@ -180,7 +198,7 @@
 
   async function sendQuestion(text: string) {
     const question = text.trim();
-    if (!question || loading) return;
+    if (!question || !canAsk) return;
 
     const userId = crypto.randomUUID();
     turns = [...turns, { id: userId, role: "user", text: question }];
@@ -257,7 +275,7 @@
               <button
                 type="button"
                 class="example"
-                disabled={loading}
+                disabled={!canAsk}
                 onclick={() => void sendQuestion(example)}
               >
                 {example}

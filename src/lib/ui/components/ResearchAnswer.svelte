@@ -69,12 +69,18 @@
     return parts;
   }
 
+  function isSafeCiteId(id: unknown): id is number {
+    return Number.isSafeInteger(id) && id >= 0;
+  }
+
   function teamsBlob(list: ResearchTeamLineup[]): string[] {
     const parts: string[] = [];
     for (const t of list) {
       parts.push(t.label);
       if (t.notes) parts.push(t.notes);
-      for (const id of t.citation_ids ?? []) parts.push(`[[cite:${id}]]`);
+      for (const id of t.citation_ids ?? []) {
+        if (isSafeCiteId(id)) parts.push(`[[cite:${id}]]`);
+      }
     }
     return parts;
   }
@@ -83,7 +89,9 @@
     const parts: string[] = [];
     for (const r of list) {
       if (r.note) parts.push(r.note);
-      for (const id of r.citation_ids ?? []) parts.push(`[[cite:${id}]]`);
+      for (const id of r.citation_ids ?? []) {
+        if (isSafeCiteId(id)) parts.push(`[[cite:${id}]]`);
+      }
     }
     return parts;
   }
@@ -92,7 +100,9 @@
     const parts: string[] = [];
     for (const t of list) {
       if (t.context) parts.push(t.context);
-      for (const id of t.citation_ids ?? []) parts.push(`[[cite:${id}]]`);
+      for (const id of t.citation_ids ?? []) {
+        if (isSafeCiteId(id)) parts.push(`[[cite:${id}]]`);
+      }
     }
     return parts;
   }
@@ -100,7 +110,9 @@
   function rotationBlob(r: ResearchRotation): string[] {
     const parts = [...r.steps];
     if (r.notes) parts.push(r.notes);
-    for (const id of r.citation_ids ?? []) parts.push(`[[cite:${id}]]`);
+    for (const id of r.citation_ids ?? []) {
+      if (isSafeCiteId(id)) parts.push(`[[cite:${id}]]`);
+    }
     return parts;
   }
 
@@ -112,7 +124,7 @@
       ...(artifact_ranks?.length ? ranksBlob(artifact_ranks) : []),
       ...(er_targets?.length ? erBlob(er_targets) : []),
       ...(rotation ? rotationBlob(rotation) : []),
-    ]),
+    ]).filter((cite) => isSafeCiteId(cite.id)),
   );
 
   let citeNum = $derived.by(() => {
@@ -218,6 +230,7 @@
 
   function citeSups(ids: number[] | undefined): string {
     return (ids ?? [])
+      .filter(isSafeCiteId)
       .map((id) => {
         const n = citeNum.get(id);
         if (!n) return "";

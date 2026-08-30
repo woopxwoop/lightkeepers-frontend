@@ -108,6 +108,16 @@ describe("research answer embeddings", () => {
     assert.match(html, /#research-cite-2300/);
   });
 
+  it("renderResearchInline keeps disallowed cluster ids as literal cite text", () => {
+    const html = renderResearchInline(
+      "Adds i-frames [[cite:2297, 9999]]",
+      [],
+      [cite2297],
+    );
+    assert.match(html, /#research-cite-2297/);
+    assert.match(html, /\[cite:9999\]/);
+  });
+
   it("orderCitationsForDisplay includes comparison text", () => {
     const ordered = orderCitationsForDisplay(
       [cite2297],
@@ -160,7 +170,7 @@ describe("research answer embeddings", () => {
     assert.doesNotMatch(html, /title=/);
   });
 
-  it("renderResearchAnswer strips unknown cite tokens", () => {
+  it("renderResearchAnswer keeps unknown cite tokens as literal text", () => {
     const html = renderResearchAnswer(
       "Before [[cite:999]] after.",
       [],
@@ -168,8 +178,21 @@ describe("research answer embeddings", () => {
     );
     assert.match(html, /Before/);
     assert.match(html, /after/);
-    assert.doesNotMatch(html, /cite:999/);
-    assert.doesNotMatch(html, /\[\[/);
+    assert.match(html, /\[cite:999\]/);
+    assert.doesNotMatch(html, /\[\[cite:999\]\]/);
+  });
+
+  it("renderResearchAnswer reuses a shared citeDisplayNum map", () => {
+    const shared = new Map<number, number>();
+    renderResearchAnswer("A [[cite:2297]].", [], [cite2297], {
+      citeDisplayNum: shared,
+    });
+    assert.equal(shared.get(2297), 1);
+    const html = renderResearchAnswer("B [[cite:2297]].", [], [cite2297], {
+      citeDisplayNum: shared,
+    });
+    assert.match(html, />1</);
+    assert.equal(shared.size, 1);
   });
 
   it("orderCitationsForDisplay follows markdown appearance", () => {

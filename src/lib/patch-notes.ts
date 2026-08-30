@@ -144,6 +144,8 @@ export function renderPatchNoteBody(md: string): string {
       continue;
     }
     if (/^\d+[.)]\s+/.test(line)) {
+      const startMatch = /^(\d+)[.)]\s+/.exec(line);
+      const start = Number.parseInt(startMatch?.[1] ?? "1", 10);
       const items: string[] = [];
       while (i < lines.length && /^\d+[.)]\s+/.test(lines[i]!)) {
         items.push(
@@ -151,7 +153,9 @@ export function renderPatchNoteBody(md: string): string {
         );
         i += 1;
       }
-      out.push(`<ol>${items.join("")}</ol>`);
+      const startAttr =
+        Number.isSafeInteger(start) && start !== 1 ? ` start="${start}"` : "";
+      out.push(`<ol${startAttr}>${items.join("")}</ol>`);
       continue;
     }
     const paras: string[] = [line];

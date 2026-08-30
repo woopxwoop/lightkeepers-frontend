@@ -24,6 +24,24 @@ export class ResearchAgentError extends Error {
   }
 }
 
+function isSafeCiteId(id: unknown): id is number {
+  return Number.isSafeInteger(id) && id >= 0;
+}
+
+function sanitizeCiteIds(value: unknown): number[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  return value.filter(isSafeCiteId);
+}
+
+function sanitizeNestedCiteIds(row: unknown): void {
+  if (!row || typeof row !== "object") return;
+  const o = row as Record<string, unknown>;
+  if (!("citation_ids" in o)) return;
+  const ids = sanitizeCiteIds(o.citation_ids);
+  if (ids) o.citation_ids = ids;
+  else delete o.citation_ids;
+}
+
 function parseResearchResponse(raw: unknown): ResearchResponse {
   if (raw === null || typeof raw !== "object" || Array.isArray(raw)) {
     throw new ResearchAgentError(
@@ -56,7 +74,22 @@ function parseResearchResponse(raw: unknown): ResearchResponse {
       "Research agent response has invalid confidence.",
     );
   }
-  return raw as ResearchResponse;
+  o.citations = o.citations.filter(
+    (c) => c && typeof c === "object" && isSafeCiteId((c as { id: unknown }).id),
+  );
+  for (const key of [
+    "disagreements",
+    "teams",
+    "weapon_ranks",
+    "artifact_ranks",
+    "er_targets",
+  ] as const) {
+    const list = o[key];
+    if (!Array.isArray(list)) continue;
+    for (const row of list) sanitizeNestedCiteIds(row);
+  }
+  sanitizeNestedCiteIds(o.rotation);
+  return o as ResearchResponse;
 }
 
 export async function fetchResearch(

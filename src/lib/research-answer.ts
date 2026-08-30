@@ -160,15 +160,13 @@ function normalizeCiteClusters(
   allowed: Set<number>,
 ): string {
   return md.replace(CITE_TOKEN_RE, (full, body: string) => {
-    const tokens = body
-      .split(",")
-      .map((part: string) => {
-        const id = Number(part.trim());
-        if (!Number.isFinite(id) || !allowed.has(id)) return "";
-        return `[[cite:${id}]]`;
-      })
-      .filter(Boolean);
-    return tokens.join("") || "";
+    const tokens = body.split(",").map((part: string) => {
+      const trimmed = part.trim();
+      const id = Number(trimmed);
+      if (Number.isFinite(id) && allowed.has(id)) return `[[cite:${id}]]`;
+      return trimmed ? `[cite:${trimmed}]` : "";
+    });
+    return tokens.join("");
   });
 }
 
@@ -206,7 +204,7 @@ export function renderResearchAnswer(
   const citeIds = new Set(citations.map((c) => c.id));
   const entityChips: string[] = [];
   const citeChips: string[] = [];
-  const citeDisplayNum = new Map<number, number>(sharedCiteNums ?? []);
+  const citeDisplayNum = sharedCiteNums ?? new Map<number, number>();
   let nextCiteNum =
     sharedCiteNums && sharedCiteNums.size > 0
       ? Math.max(...sharedCiteNums.values())
