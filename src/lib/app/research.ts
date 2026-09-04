@@ -1,16 +1,25 @@
-/** Client fetch for dev research chat → /api/research proxy. */
+/** Client fetch for research → /api/research proxy. */
 
-import type { InventoryWeapon, RosterProgress } from "$lib/definitions";
 import type {
+  InventoryArtifact,
+  InventoryWeapon,
+  RosterProgress,
+} from "$lib/definitions";
+import type {
+  ResearchArtifactOption,
   ResearchOwnedCharacter,
   ResearchOwnedWeapon,
+  ResearchRankItem,
   ResearchRequest,
   ResearchResponse,
   ResearchLlmProvider,
 } from "$lib/research-types";
 
-/** Match server research agent budget so stalled chat requests recover. */
-const RESEARCH_FETCH_TIMEOUT_MS = 120_000;
+/**
+ * Match server research-agent budget. Two LLM passes (corpus + personalize)
+ * routinely land in 15–40s; retries can push higher.
+ */
+const RESEARCH_FETCH_TIMEOUT_MS = 180_000;
 
 /** Soft caps aligned with agent ResearchRequest max_length (after weapon dedupe). */
 const MAX_OWNED_CHARACTERS = 200;
@@ -27,6 +36,18 @@ export type ResearchPersonalizationFields = Pick<
   ResearchRequest,
   "roster_name_ids" | "owned_characters" | "owned_weapons" | "personalize"
 >;
+
+/** Owned GOOD keys for client-side Build panel inventory join. */
+export type ResearchOwnedGearKeys = {
+  weapons: Set<string>;
+  artifactSets: Set<string>;
+};
+
+export type ResearchOwnedRankRow<T extends { key: string }> = T & {
+  owned: boolean;
+  /** Highest-rank owned key in this list (first owned by ascending rank). */
+  bestOwned: boolean;
+};
 
 function mapOwnedWeapon(
   weapon: Pick<InventoryWeapon, "key" | "level" | "ascension" | "refinement">,
@@ -68,6 +89,9 @@ function mapOwnedCharacter(
  * Inventory is deduped by GOOD key (best R + copy count). Keys equipped on a
  * character are omitted from `owned_weapons` but their total copies are attached
  * to that character's weapon.
+ *
+ * @deprecated Agent ignores personalize / owned_* — prefer
+ * {@link collectOwnedResearchGearKeys} + {@link annotateOwnedRankRows} on the client.
  */
 export function buildResearchPersonalization(input: {
   characters: ReadonlyArray<ResearchRosterCharacter>;
@@ -123,6 +147,98 @@ export function buildResearchPersonalization(input: {
     fields.owned_weapons = extras;
   }
   return fields;
+}
+
+/** Case-fold helper for GOOD key membership (agent may return display-ish casing). */
+function gearKeyFold(key: string): string {
+  return key.replace(/[^A-Za-z0-9]/g, "").toLowerCase();
+}
+
+/**
+ * Collect owned weapon GOOD keys + artifact set keys from local inventory
+ * (and equipped weapons on roster progress). Used only for Build panel badges —
+ * never sent to the research agent.
+ */
+export function collectOwnedResearchGearKeys(input: {
+  inventoryWeapons?: ReadonlyArray<InventoryWeapon> | null;
+  inventoryArtifacts?: ReadonlyArray<InventoryArtifact> | null;
+  characters?: ReadonlyArray<{
+    progress?: { weapon?: { key: string } | null } | null;
+  } | null>;
+}): ResearchOwnedGearKeys {
+  const weapons = new Set<string>();
+  const artifactSets = new Set<string>();
+  for (const weapon of input.inventoryWeapons ?? []) {
+    if (weapon.key) weapons.add(weapon.key);
+  }
+  for (const character of input.characters ?? []) {
+    const key = character?.progress?.weapon?.key;
+    if (key) weapons.add(key);
+  }
+  for (const artifact of input.inventoryArtifacts ?? []) {
+    if (artifact.setKey) artifactSets.add(artifact.setKey);
+  }
+  return { weapons, artifactSets };
+}
+
+function ownedSetHas(owned: ReadonlySet<string>, key: string): boolean {
+  if (owned.has(key)) return true;
+  const fold = gearKeyFold(key);
+  for (const candidate of owned) {
+    if (gearKeyFold(candidate) === fold) return true;
+  }
+  return false;
+}
+
+/**
+ * Annotate rank / option rows with owned vs unowned and mark the best owned
+ * (lowest rank number among owned keys; for unranked options, first owned).
+ */
+export function annotateOwnedRankRows<
+  T extends { key: string; rank?: number },
+>(
+  rows: ReadonlyArray<T>,
+  ownedKeys: ReadonlySet<string>,
+): ResearchOwnedRankRow<T>[] {
+  let bestOwnedKey: string | null = null;
+  for (const row of rows) {
+    if (!ownedSetHas(ownedKeys, row.key)) continue;
+    bestOwnedKey = row.key;
+    break;
+  }
+  const bestFold = bestOwnedKey ? gearKeyFold(bestOwnedKey) : null;
+  return rows.map((row) => {
+    const owned = ownedSetHas(ownedKeys, row.key);
+    return {
+      ...row,
+      owned,
+      bestOwned: owned && bestFold !== null && gearKeyFold(row.key) === bestFold,
+    };
+  });
+}
+
+/** Convenience: annotate weapon ranks + artifact ranks/options for BuildPanel. */
+export function joinBuildInventory(input: {
+  weapon_ranks: ReadonlyArray<ResearchRankItem>;
+  artifact_ranks: ReadonlyArray<ResearchRankItem>;
+  artifact_options: ReadonlyArray<ResearchArtifactOption>;
+  owned: ResearchOwnedGearKeys;
+}): {
+  weapons: ResearchOwnedRankRow<ResearchRankItem>[];
+  artifacts: ResearchOwnedRankRow<ResearchRankItem>[];
+  options: ResearchOwnedRankRow<ResearchArtifactOption>[];
+} {
+  return {
+    weapons: annotateOwnedRankRows(input.weapon_ranks, input.owned.weapons),
+    artifacts: annotateOwnedRankRows(
+      input.artifact_ranks,
+      input.owned.artifactSets,
+    ),
+    options: annotateOwnedRankRows(
+      input.artifact_options,
+      input.owned.artifactSets,
+    ),
+  };
 }
 
 function parseApiError(status: number, text: string): string {
@@ -195,6 +311,22 @@ export async function postResearchChat(
   }
 
   return parseOkJson<ResearchResponse>(res.status, text);
+}
+
+/**
+ * Character Build button → dedicated Build view. No inventory / personalize.
+ * Agent fills the question when omitted.
+ */
+export async function postResearchBuild(
+  focusNameId: string,
+  opts?: { llm_provider?: ResearchLlmProvider },
+): Promise<ResearchResponse> {
+  return postResearchChat({
+    topic: "build",
+    focus_name_ids: [focusNameId],
+    answer_style: "concise",
+    llm_provider: opts?.llm_provider,
+  });
 }
 
 export type ResearchProxyHealth = {

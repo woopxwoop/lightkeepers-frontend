@@ -12,7 +12,7 @@
         <span class="page-meta-sep" aria-hidden="true">·</span>
         <a class="back-link" href={resolve("/dev/ui")}>UI gallery</a>
         <span class="page-meta-sep" aria-hidden="true">·</span>
-        <a class="back-link" href={resolve("/dev/research-chat")}>Research chat</a>
+        <a class="back-link" href={resolve("/dev/research-chat")}>Research</a>
         <span class="page-meta-sep" aria-hidden="true">·</span>
         <a class="back-link" href={resolve("/dev/infographics")}
           >Infographics → Abyss summary</a

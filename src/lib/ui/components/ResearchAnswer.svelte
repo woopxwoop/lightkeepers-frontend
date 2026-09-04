@@ -1,8 +1,17 @@
 <script lang="ts">
   /**
    * Research answer: short lede + site-native panels (comparison, teams, ranks, ER, rotation).
+   * When `view === "build"`, mounts BuildPanel instead of the freeform stack.
    */
   import { page } from "$app/state";
+  import {
+    collectOwnedResearchGearKeys,
+    type ResearchOwnedGearKeys,
+  } from "$lib/app/research";
+  import {
+    loadRosterArtifacts,
+    loadRosterWeapons,
+  } from "$lib/app/roster-inventory";
   import { handCharactersFromMembers } from "$lib/character-teams";
   import type { Character } from "$lib/definitions";
   import { equipmentVersion } from "$lib/equipment-data";
@@ -16,16 +25,22 @@
     safeExternalHref,
   } from "$lib/research-answer";
   import type {
+    ResearchArtifactOption,
     ResearchCitation,
     ResearchComparison,
     ResearchEntity,
     ResearchErTarget,
     ResearchRankItem,
     ResearchRotation,
+    ResearchStatPriority,
     ResearchTeamLineup,
+    ResearchView,
   } from "$lib/research-types";
+  import { charactersOwned } from "$lib/stores";
+  import BuildPanel from "$lib/ui/components/BuildPanel.svelte";
   import ResearchEntityMention from "$lib/ui/components/ResearchEntityMention.svelte";
   import TeamCardHand from "$lib/ui/components/TeamCardHand.svelte";
+  import { get } from "svelte/store";
   import { mount, tick, unmount } from "svelte";
 
   let {
@@ -33,24 +48,71 @@
     entities = [],
     citations = [],
     disagreements = [],
+    view = null,
+    focus_name_id = null,
     comparison = null,
     teams = null,
     weapon_ranks = null,
     artifact_ranks = null,
+    artifact_options = null,
+    stat_priority = null,
     er_targets = null,
     rotation = null,
+    ownedGear = null,
   }: {
     markdown: string;
     entities?: ResearchEntity[];
     citations?: ResearchCitation[];
     disagreements?: { summary: string; citation_ids?: number[] }[];
+    view?: ResearchView | null;
+    focus_name_id?: string | null;
     comparison?: ResearchComparison | null;
     teams?: ResearchTeamLineup[] | null;
     weapon_ranks?: ResearchRankItem[] | null;
     artifact_ranks?: ResearchRankItem[] | null;
+    artifact_options?: ResearchArtifactOption[] | null;
+    stat_priority?: ResearchStatPriority | null;
     er_targets?: ResearchErTarget[] | null;
     rotation?: ResearchRotation | null;
+    ownedGear?: ResearchOwnedGearKeys | null;
   } = $props();
+
+  let buildOwnedGear = $state<ResearchOwnedGearKeys | null>(null);
+
+  $effect(() => {
+    if (view !== "build") {
+      buildOwnedGear = null;
+      return;
+    }
+    if (ownedGear) {
+      buildOwnedGear = ownedGear;
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      let weapons = null;
+      let artifacts = null;
+      try {
+        weapons = await loadRosterWeapons();
+      } catch {
+        // Soft-fail.
+      }
+      try {
+        artifacts = await loadRosterArtifacts();
+      } catch {
+        // Soft-fail.
+      }
+      if (cancelled) return;
+      buildOwnedGear = collectOwnedResearchGearKeys({
+        inventoryWeapons: weapons,
+        inventoryArtifacts: artifacts,
+        characters: get(charactersOwned),
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  });
 
   const citeInstanceId = $props.id();
   const citeAnchorPrefix = `ra-${citeInstanceId}-`;
@@ -70,7 +132,7 @@
   }
 
   function isSafeCiteId(id: unknown): id is number {
-    return Number.isSafeInteger(id) && id >= 0;
+    return typeof id === "number" && Number.isSafeInteger(id) && id >= 0;
   }
 
   function teamsBlob(list: ResearchTeamLineup[]): string[] {
@@ -213,17 +275,27 @@
     const map = kind === "weapon" ? entityByWeapon : entityBySet;
     const candidates = [resolvedKey, raw].filter(Boolean) as string[];
     for (const rawVal of candidates) {
-      const key = rawVal.toLowerCase();
-      const compact = rawVal.replace(/[^A-Za-z0-9]/g, "").toLowerCase();
-      const ent =
-        map.get(key) ||
-        map.get(compact) ||
-        [...map.values()].find(
-          (e) =>
-            e.label.toLowerCase() === key ||
-            (e.weapon_key ?? e.set_key ?? "").toLowerCase() === compact,
-        );
-      if (ent) return ent;
+      // Personalize sometimes appends (R1)/(R5) onto keys — strip for lookup.
+      const stripped = rawVal
+        .replace(/\s*[\(\[]?\s*r\s*[1-5]\s*[\)\]]?\s*$/i, "")
+        .trim();
+      for (const candidate of [rawVal, stripped]) {
+        if (!candidate) continue;
+        const key = candidate.toLowerCase();
+        const compact = candidate.replace(/[^A-Za-z0-9]/g, "").toLowerCase();
+        const ent =
+          map.get(key) ||
+          map.get(compact) ||
+          [...map.values()].find(
+            (e) =>
+              e.label.toLowerCase() === key ||
+              (e.weapon_key ?? e.set_key ?? "").toLowerCase() === compact ||
+              (e.weapon_key ?? e.set_key ?? "")
+                .replace(/[^A-Za-z0-9]/g, "")
+                .toLowerCase() === compact,
+          );
+        if (ent) return ent;
+      }
     }
     return null;
   }
@@ -349,6 +421,7 @@
 
   /** Mount ResearchEntityMention onto slot markers left by renderResearchAnswer. */
   $effect(() => {
+    if (view === "build") return;
     void html;
     void verdictHtml;
     void sides;
@@ -396,6 +469,20 @@
   });
 </script>
 
+{#if view === "build"}
+  <BuildPanel
+    focus_name_id={focus_name_id}
+    {markdown}
+    {entities}
+    {citations}
+    {disagreements}
+    weapon_ranks={weapon_ranks ?? []}
+    artifact_ranks={artifact_ranks ?? []}
+    artifact_options={artifact_options ?? []}
+    {stat_priority}
+    ownedGear={ownedGear ?? buildOwnedGear}
+  />
+{:else}
 <div class="research-answer" bind:this={answerRoot}>
   {#if disagreements.length > 0}
     <aside class="research-disagreements" aria-label="Source disagreements">
@@ -482,61 +569,58 @@
     </section>
   {/if}
 
-  {#if weaponRankRows.length > 0}
-    <section class="research-ranks" aria-label="Weapon ranking">
-      <h3 class="research-ranks-title">Weapons</h3>
-      <ol class="research-rank-list">
-        {#each weaponRankRows as row (row.key)}
-          <li class="research-rank-row">
-            <span class="research-rank-num" aria-hidden="true">{row.rank}</span>
-            <div class="research-rank-body">
-              <div class="research-rank-head">
-                {#if row.entity}
-                  <ResearchEntityMention entity={row.entity} />
-                {:else}
-                  <span class="research-rank-label">{row.label}</span>
-                {/if}
-                {#if row.citeHtml}
-                  <span>{@html row.citeHtml}</span>
-                {/if}
-              </div>
-              {#if row.noteHtml}
-                <p class="research-rank-note">{@html row.noteHtml}</p>
-              {/if}
-            </div>
-          </li>
-        {/each}
-      </ol>
-    </section>
-  {/if}
+  {#snippet rankRow(row: (typeof weaponRankRows)[number])}
+    <li class="research-rank-row" class:is-top={row.rank === 1}>
+      <span class="research-rank-num" aria-hidden="true">{row.rank}</span>
+      <div class="research-rank-body">
+        <div class="research-rank-head">
+          {#if row.entity}
+            <ResearchEntityMention entity={row.entity} />
+          {:else}
+            <span class="research-rank-label">{row.label}</span>
+          {/if}
+          {#if row.citeHtml}
+            <span>{@html row.citeHtml}</span>
+          {/if}
+        </div>
+        {#if row.noteHtml}
+          <p class="research-rank-note">{@html row.noteHtml}</p>
+        {/if}
+      </div>
+    </li>
+  {/snippet}
 
-  {#if artifactRankRows.length > 0}
-    <section class="research-ranks" aria-label="Artifact ranking">
-      <h3 class="research-ranks-title">Artifacts</h3>
-      <ol class="research-rank-list">
-        {#each artifactRankRows as row (row.key)}
-          <li class="research-rank-row">
-            <span class="research-rank-num" aria-hidden="true">{row.rank}</span>
-            <div class="research-rank-body">
-              <div class="research-rank-head">
-                {#if row.entity}
-                  <ResearchEntityMention entity={row.entity} />
-                {:else}
-                  <span class="research-rank-label">{row.label}</span>
-                {/if}
-                {#if row.citeHtml}
-                  <span>{@html row.citeHtml}</span>
-                {/if}
-              </div>
-              {#if row.noteHtml}
-                <p class="research-rank-note">{@html row.noteHtml}</p>
-              {/if}
-            </div>
-          </li>
-        {/each}
-      </ol>
-    </section>
-  {/if}
+  {#snippet rankSection(
+    title: string,
+    ariaLabel: string,
+    rows: typeof weaponRankRows,
+  )}
+    {#if rows.length > 0}
+      {@const top = rows[0]}
+      {@const rest = rows.slice(1)}
+      <section class="research-ranks" aria-label={ariaLabel}>
+        <h3 class="research-ranks-title">{title}</h3>
+        <ol class="research-rank-list">
+          {@render rankRow(top)}
+        </ol>
+        {#if rest.length > 0}
+          <details class="research-ranks-more">
+            <summary>
+              {rest.length} more {rest.length === 1 ? "option" : "options"}
+            </summary>
+            <ol class="research-rank-list research-rank-list-more" start={2}>
+              {#each rest as row (row.key)}
+                {@render rankRow(row)}
+              {/each}
+            </ol>
+          </details>
+        {/if}
+      </section>
+    {/if}
+  {/snippet}
+
+  {@render rankSection("Weapons", "Weapon ranking", weaponRankRows)}
+  {@render rankSection("Artifacts", "Artifact ranking", artifactRankRows)}
 
   {#if erRows.length > 0}
     <section class="research-er" aria-label="Energy recharge targets">
@@ -604,6 +688,7 @@
     </ol>
   {/if}
 </div>
+{/if}
 
 <style>
   .research-answer {
@@ -872,6 +957,46 @@
     display: flex;
     gap: 0.65rem;
     align-items: flex-start;
+  }
+
+  .research-rank-row.is-top .research-rank-num {
+    color: var(--foreground-color);
+  }
+
+  .research-ranks-more {
+    margin: 0.15rem 0 0;
+  }
+
+  .research-ranks-more summary {
+    cursor: pointer;
+    list-style: none;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: color-mix(in srgb, var(--foreground-color) 58%, transparent);
+    padding: 0.2rem 0;
+    user-select: none;
+  }
+
+  .research-ranks-more summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .research-ranks-more summary::before {
+    content: "▸ ";
+    display: inline-block;
+    transition: transform 0.12s ease;
+  }
+
+  .research-ranks-more[open] summary::before {
+    transform: rotate(90deg);
+  }
+
+  .research-ranks-more summary:hover {
+    color: var(--foreground-color);
+  }
+
+  .research-rank-list-more {
+    margin-top: 0.45rem;
   }
 
   .research-rank-num {

@@ -51,6 +51,11 @@ export type ResearchLlmProvider = "gemini" | "deepseek";
 
 export type ResearchAnswerStyle = "concise" | "normal" | "verbose";
 
+/** Dedicated research UI view. `topic=build` forces `view=build` panels. */
+export type ResearchTopic = "build";
+
+export type ResearchView = "build";
+
 /** Player-owned weapon (GOOD key) for research personalization. */
 export type ResearchOwnedWeapon = {
   key: string;
@@ -72,17 +77,27 @@ export type ResearchOwnedCharacter = {
 };
 
 export type ResearchRequest = {
+  /**
+   * Force a dedicated research view. `topic=build` skips freeform intent and
+   * returns `view=build` panels. Requires `focus_name_ids`.
+   */
+  topic?: ResearchTopic | null;
   question_kind?: ResearchQuestionKind;
-  question: string;
+  /**
+   * Freeform question. Optional when `topic=build` — agent fills
+   * `How should I build {focus}?` if omitted.
+   */
+  question?: string;
   focus_name_ids?: string[];
   llm_provider?: ResearchLlmProvider;
   mode?: "abyss" | "stygian";
+  /** @deprecated Ignored by agent — do not send for research. */
   roster_name_ids?: string[];
-  /** Owned roster with progress — enables personalized teams/weapons advice. */
+  /** @deprecated Ignored by agent — do not send inventory for research. */
   owned_characters?: ResearchOwnedCharacter[];
-  /** Extra inventory weapons (GOOD keys) not attached to a character. */
+  /** @deprecated Ignored by agent — do not send inventory for research. */
   owned_weapons?: ResearchOwnedWeapon[];
-  /** Prefer owned teammates/weapons when inventory is present (default true). */
+  /** @deprecated Ignored by agent — client joins inventory locally. */
   personalize?: boolean;
   /** Chat-friendly length. Agent defaults to concise if omitted. */
   answer_style?: ResearchAnswerStyle;
@@ -140,6 +155,23 @@ export type ResearchRankItem = {
   citation_ids?: number[];
 };
 
+/** Unranked situational artifact set for the Build UI options section. */
+export type ResearchArtifactOption = {
+  key: string;
+  note?: string | null;
+  citation_ids?: number[];
+};
+
+/** Main/substat priority for the Build UI stats row. */
+export type ResearchStatPriority = {
+  sands: string[];
+  goblet: string[];
+  circlet: string[];
+  substats: string[];
+  notes?: string | null;
+  citation_ids?: number[];
+};
+
 /** ER requirement for a character. */
 export type ResearchErTarget = {
   name_id: string;
@@ -166,6 +198,7 @@ export type ResearchTracePhase =
 export type ResearchAnswerPath =
   | "kit_fast_path"
   | "equipment_fast_path"
+  | "build_fast_path"
   | "thin_refuse"
   | "llm_synthesis"
   | "llm_fallback_kit";
@@ -244,14 +277,26 @@ export type ResearchResponse = {
   entities?: ResearchEntity[];
   /** Auditable steps: intent, retrieval, synthesis path, LLM used. */
   trace?: ResearchTrace | null;
+  /**
+   * UI view discriminator. `view=build` → mount `<BuildPanel>` (not free chat).
+   * For build view, rank/option lists are always arrays (`[]` when empty);
+   * `comparison` / `teams` / `er_targets` / `rotation` are always null.
+   */
+  view?: ResearchView | null;
+  /** Primary focus character for `view=build` (catalog `name_id`). */
+  focus_name_id?: string | null;
   /** Optional A/B panel for vs/worth-it questions. */
   comparison?: ResearchComparison | null;
   /** Optional 4-character lineups for team/build questions. */
   teams?: ResearchTeamLineup[] | null;
-  /** Optional ranked weapons for build questions. */
+  /** Ranked weapons (always `[]` when `view=build`). */
   weapon_ranks?: ResearchRankItem[] | null;
-  /** Optional ranked artifact sets for build questions. */
+  /** Ranked artifact sets (always `[]` when `view=build`). */
   artifact_ranks?: ResearchRankItem[] | null;
+  /** Unranked situational artifact sets (always `[]` when `view=build`). */
+  artifact_options?: ResearchArtifactOption[] | null;
+  /** Main/substat priority (`null` when sources lack guidance). */
+  stat_priority?: ResearchStatPriority | null;
   /** Optional ER targets for ER questions. */
   er_targets?: ResearchErTarget[] | null;
   /** Optional rotation steps for how-to-play questions. */

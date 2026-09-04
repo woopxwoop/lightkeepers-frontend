@@ -1,11 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { resolve } from "$app/paths";
+  import { dev } from "$app/environment";
   import { animationsEnabled, charactersOwned } from "$lib/stores";
   import CharacterIcon from "$lib/ui/components/CharacterIcon.svelte";
   import PageShell from "$lib/ui/components/PageShell.svelte";
   import PageTrail from "$lib/ui/components/PageTrail.svelte";
   import ActionMenu from "$lib/ui/components/ActionMenu.svelte";
+  import Button from "$lib/ui/components/Button.svelte";
+  import BuildResearchSheet from "$lib/ui/components/BuildResearchSheet.svelte";
   import CharacterKitPanel from "$lib/ui/components/character/CharacterKitPanel.svelte";
   import CharacterTeamsPanel from "$lib/ui/components/character/CharacterTeamsPanel.svelte";
   import CharacterAnalyticsPanel from "$lib/ui/components/character/CharacterAnalyticsPanel.svelte";
@@ -52,6 +55,7 @@
   let activeTab = $state<PageTab>("builds");
   let mobileNavOpen = $state(false);
   let skillsElement = $state("");
+  let buildResearchOpen = $state(false);
   let activeTabLabel = $derived(
     TAB_OPTIONS.find((option) => option.value === activeTab)?.label ?? "Builds",
   );
@@ -184,6 +188,15 @@
         </div>
       </div>
       <div class="hero-menu">
+        {#if dev}
+          <Button
+            variant="secondary"
+            class="hero-build-btn"
+            onclick={() => (buildResearchOpen = true)}
+          >
+            Build
+          </Button>
+        {/if}
         <ActionMenu label="Character actions" items={heroMenuItems} />
       </div>
     </section>
@@ -272,6 +285,14 @@
   </div>
 </PageShell>
 
+{#if dev}
+  <BuildResearchSheet
+    bind:open={buildResearchOpen}
+    focusNameId={kit.name_id}
+    characterName={kit.name}
+  />
+{/if}
+
 <style>
   .char-page {
     display: flex;
@@ -315,6 +336,15 @@
     top: 0.65rem;
     right: 0.65rem;
     z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .hero-menu :global(.hero-build-btn) {
+    border-color: var(--accent-1);
+    background: color-mix(in srgb, var(--background-color) 72%, transparent);
+    color: var(--foreground-color);
   }
 
   .hero-portrait {

@@ -7,8 +7,8 @@ import { env } from "$env/dynamic/private";
 import type { ResearchRequest, ResearchResponse } from "$lib/research-types";
 import { readBoundedResponseBody } from "$lib/server/team-config";
 
-/** Gemini + retrieval can be slow over a tunnel. Covers headers + body. */
-const RESEARCH_TIMEOUT_MS = 120_000;
+/** Gemini + retrieval can be slow over a tunnel; two-pass personalize needs ~2×. */
+const RESEARCH_TIMEOUT_MS = 180_000;
 /** Cap agent JSON so a runaway payload cannot blow the proxy. */
 const MAX_RESEARCH_BODY_BYTES = 2 * 1024 * 1024;
 
@@ -25,7 +25,7 @@ export class ResearchAgentError extends Error {
 }
 
 function isSafeCiteId(id: unknown): id is number {
-  return Number.isSafeInteger(id) && id >= 0;
+  return typeof id === "number" && Number.isSafeInteger(id) && id >= 0;
 }
 
 function sanitizeCiteIds(value: unknown): number[] | undefined {
@@ -82,6 +82,7 @@ function parseResearchResponse(raw: unknown): ResearchResponse {
     "teams",
     "weapon_ranks",
     "artifact_ranks",
+    "artifact_options",
     "er_targets",
   ] as const) {
     const list = o[key];
@@ -89,6 +90,7 @@ function parseResearchResponse(raw: unknown): ResearchResponse {
     for (const row of list) sanitizeNestedCiteIds(row);
   }
   sanitizeNestedCiteIds(o.rotation);
+  sanitizeNestedCiteIds(o.stat_priority);
   return o as ResearchResponse;
 }
 

@@ -1,23 +1,17 @@
 <script lang="ts">
   /**
-   * TC research chat — page chrome or plain (Apps sheet).
+   * Structured research ask — Focus + topic chip + Run (no freeform prompt).
+   * Build-only for now; other topics shown disabled as Soon.
    */
   import { tick } from "svelte";
   import { page } from "$app/state";
   import { resolve } from "$app/paths";
   import {
-    buildResearchPersonalization,
-    postResearchChat,
+    postResearchBuild,
     fetchResearchProxyHealth,
     type ResearchProxyHealth,
   } from "$lib/app/research";
-  import { loadRosterWeapons } from "$lib/app/roster-inventory";
-  import type {
-    ResearchAnswerStyle,
-    ResearchLlmProvider,
-    ResearchRequest,
-    ResearchResponse,
-  } from "$lib/research-types";
+  import type { ResearchLlmProvider, ResearchResponse } from "$lib/research-types";
   import PageShell from "$lib/ui/components/PageShell.svelte";
   import Button from "$lib/ui/components/Button.svelte";
   import CharacterSearchSelect from "$lib/ui/components/CharacterSearchSelect.svelte";
@@ -25,19 +19,21 @@
   import ResearchTrace from "$lib/ui/components/ResearchTrace.svelte";
   import Select from "$lib/ui/components/Select.svelte";
   import type { SelectOption } from "$lib/ui/components/Select.svelte";
-  import Toggle from "$lib/ui/components/Toggle.svelte";
   import type { Character } from "$lib/definitions";
-  import { charactersHydrated, charactersOwned } from "$lib/stores";
-  import { get } from "svelte/store";
 
-  type ChatTurn =
-    | { id: string; role: "user"; text: string }
-    | {
-        id: string;
-        role: "assistant";
-        response?: ResearchResponse;
-        error?: string;
-      };
+  type ResearchTopicChip = "build" | "teams" | "rotation" | "er" | "worth_it";
+
+  const TOPIC_CHIPS: {
+    id: ResearchTopicChip;
+    label: string;
+    enabled: boolean;
+  }[] = [
+    { id: "build", label: "Build", enabled: true },
+    { id: "teams", label: "Teams", enabled: false },
+    { id: "rotation", label: "Rotation", enabled: false },
+    { id: "er", label: "ER", enabled: false },
+    { id: "worth_it", label: "Worth-it", enabled: false },
+  ];
 
   let {
     chrome = "page",
@@ -46,47 +42,20 @@
     chrome?: "page" | "plain";
   } = $props();
 
-  const examples = [
-    "What does Hu Tao C1 do and is it worth it vs Staff of Homa?",
-    "How should I play Hu Tao rotation with Xingqiu?",
-    "What ER does Xingqiu need in Hu Tao double hydro?",
-  ];
-
-  const questionFieldId = $props.id();
-
   const providerOptions: SelectOption<ResearchLlmProvider>[] = [
     { value: "gemini", label: "Gemini" },
     { value: "deepseek", label: "DeepSeek" },
   ];
 
-  const styleOptions: SelectOption<ResearchAnswerStyle>[] = [
-    { value: "concise", label: "Concise" },
-    { value: "normal", label: "Normal" },
-    { value: "verbose", label: "Verbose" },
-  ];
-
   let focusNameId = $state("");
+  let topic = $state<ResearchTopicChip>("build");
   let llmProvider = $state<ResearchLlmProvider>("gemini");
-  let answerStyle = $state<ResearchAnswerStyle>("concise");
-  let personalize = $state(false);
-  let personalizeInited = $state(false);
-  let draft = $state("");
   let loading = $state(false);
-  let turns = $state<ChatTurn[]>([]);
+  let error = $state<string | null>(null);
+  let response = $state<ResearchResponse | null>(null);
   let proxyHealth = $state<ResearchProxyHealth | null>(null);
-  let threadEl: HTMLDivElement | null = $state(null);
-  let composerEl: HTMLTextAreaElement | null = $state(null);
-
   let healthRefreshing = $state(false);
-
-  let hasOwnedRoster = $derived($charactersOwned.some((c) => c.isOwned));
-
-  $effect(() => {
-    if (personalizeInited) return;
-    if (!$charactersHydrated) return;
-    personalize = hasOwnedRoster;
-    personalizeInited = true;
-  });
+  let resultEl: HTMLDivElement | null = $state(null);
 
   async function refreshHealth() {
     healthRefreshing = true;
@@ -125,6 +94,12 @@
     return page.data.mapping.get(nameId);
   }
 
+  let focusLabel = $derived.by(() => {
+    if (!focusNameId) return null;
+    const c = getCharacter(focusNameId);
+    return c?.name ?? focusNameId;
+  });
+
   let agentOk = $derived(proxyHealth?.agent.ok === true);
 
   let providerReady = $derived.by(() => {
@@ -144,18 +119,25 @@
     return true;
   });
 
-  let canAsk = $derived(providerReady && !loading);
-  let canSend = $derived(canAsk && draft.trim().length > 0);
+  let canRun = $derived(
+    providerReady && !loading && Boolean(focusNameId) && topic === "build",
+  );
 
   let healthLabel = $derived.by(() => {
     if (!proxyHealth) return "Checking agent…";
     if (!proxyHealth.configured) return "Env not configured";
     if (proxyHealth.agent.ok) {
       const providerLabel = llmProvider === "deepseek" ? "DeepSeek" : "Gemini";
-      if (llmProvider === "deepseek" && proxyHealth.agent.deepseekConfigured === false) {
+      if (
+        llmProvider === "deepseek" &&
+        proxyHealth.agent.deepseekConfigured === false
+      ) {
         return `Agent up · ${providerLabel} key missing`;
       }
-      if (llmProvider === "gemini" && proxyHealth.agent.geminiConfigured === false) {
+      if (
+        llmProvider === "gemini" &&
+        proxyHealth.agent.geminiConfigured === false
+      ) {
         return `Agent up · ${providerLabel} key missing`;
       }
       return `Agent connected · ${providerLabel}`;
@@ -163,80 +145,36 @@
     return proxyHealth.agent.error ?? "Agent unreachable";
   });
 
-  async function scrollToBottom() {
-    await tick();
-    threadEl?.scrollTo({ top: threadEl.scrollHeight, behavior: "smooth" });
-  }
-
-  async function buildRequest(question: string): Promise<ResearchRequest> {
-    const body: ResearchRequest = {
-      question_kind: "ask",
-      question,
-      focus_name_ids: focusNameId ? [focusNameId] : [],
-      llm_provider: llmProvider,
-      answer_style: answerStyle,
-    };
-
-    if (!personalize) {
-      body.personalize = false;
-      return body;
-    }
-
-    let inventoryWeapons = null;
-    try {
-      inventoryWeapons = await loadRosterWeapons();
-    } catch {
-      // Soft-fail: still send owned characters without inventory extras.
-    }
-
-    const fields = buildResearchPersonalization({
-      characters: get(charactersOwned),
-      inventoryWeapons,
-    });
-    return { ...body, ...fields };
-  }
-
-  async function sendQuestion(text: string) {
-    const question = text.trim();
-    if (!question || !canAsk) return;
-
-    const userId = crypto.randomUUID();
-    turns = [...turns, { id: userId, role: "user", text: question }];
-    draft = "";
+  async function runAsk() {
+    if (!canRun || !focusNameId) return;
     loading = true;
-    void scrollToBottom();
-
-    const assistantId = crypto.randomUUID();
+    error = null;
+    response = null;
     try {
-      const response = await postResearchChat(await buildRequest(question));
-      turns = [...turns, { id: assistantId, role: "assistant", response }];
+      const res = await postResearchBuild(focusNameId, {
+        llm_provider: llmProvider,
+      });
+      response = res;
+      await tick();
+      resultEl?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     } catch (err) {
-      turns = [
-        ...turns,
-        {
-          id: assistantId,
-          role: "assistant",
-          error: err instanceof Error ? err.message : "Request failed",
-        },
-      ];
+      error = err instanceof Error ? err.message : "Request failed";
     } finally {
       loading = false;
-      void scrollToBottom();
-      composerEl?.focus();
     }
   }
 
   function onSubmit(event: SubmitEvent) {
     event.preventDefault();
-    void sendQuestion(draft);
+    void runAsk();
   }
 
-  function onComposerKeydown(event: KeyboardEvent) {
-    if (event.key !== "Enter" || event.shiftKey) return;
-    if (event.isComposing) return;
-    event.preventDefault();
-    void sendQuestion(draft);
+  function selectTopic(id: ResearchTopicChip, enabled: boolean) {
+    if (!enabled || loading) return;
+    topic = id;
   }
+
+  let isBuildView = $derived(response?.view === "build");
 </script>
 
 {#snippet healthPill()}
@@ -261,102 +199,30 @@
   </p>
 {/snippet}
 
-{#snippet chatBody()}
-  <div class="chat-body">
-    <div class="thread" bind:this={threadEl} aria-live="polite">
-      {#if turns.length === 0 && !loading}
-        <div class="empty">
-          <h2 class="section-title">Ask a research question</h2>
-          <p class="section-lede">
-            Builds, rotations, constellations, ER — grounded in the TC corpus.
-          </p>
-          <div class="examples">
-            {#each examples as example (example)}
-              <button
-                type="button"
-                class="example"
-                disabled={!canAsk}
-                onclick={() => void sendQuestion(example)}
-              >
-                {example}
-              </button>
-            {/each}
-          </div>
-        </div>
-      {:else}
-        <div class="messages">
-          {#each turns as turn (turn.id)}
-            {#if turn.role === "user"}
-              <div class="row row-user">
-                <div class="bubble-user">{turn.text}</div>
-              </div>
-            {:else if turn.error}
-              <div class="row row-assistant">
-                <div class="msg-error">
-                  <p class="msg-error-label">Request failed</p>
-                  <p class="msg-error-text">{turn.error}</p>
-                </div>
-              </div>
-            {:else if turn.response}
-              <div class="row row-assistant">
-                <div class="msg-assistant">
-                  <div class="msg-meta">
-                    <span class="msg-role">Research</span>
-                    <span class="msg-meta-sep" aria-hidden="true">·</span>
-                    <span class="confidence confidence-{turn.response.confidence}">
-                      {turn.response.confidence}
-                      {#if turn.response.thin_corpus}
-                        · thin corpus
-                      {/if}
-                    </span>
-                  </div>
-                  <ResearchAnswer
-                    markdown={turn.response.answer_markdown}
-                    entities={turn.response.entities ?? []}
-                    citations={turn.response.citations}
-                    disagreements={turn.response.disagreements ?? []}
-                    comparison={turn.response.comparison ?? null}
-                    teams={turn.response.teams ?? null}
-                    weapon_ranks={turn.response.weapon_ranks ?? null}
-                    artifact_ranks={turn.response.artifact_ranks ?? null}
-                    er_targets={turn.response.er_targets ?? null}
-                    rotation={turn.response.rotation ?? null}
-                  />
-                  {#if turn.response.trace}
-                    <ResearchTrace trace={turn.response.trace} />
-                  {/if}
-                </div>
-              </div>
-            {/if}
-          {/each}
+{#snippet askBody()}
+  <div class="ask-body">
+    <form class="ask-form" onsubmit={onSubmit}>
+      <div class="ask-lede">
+        <h2 class="section-title">Research</h2>
+        <p class="section-lede">
+          Pick a character and a topic. Build returns ranked weapons, artifacts,
+          and stats — no freeform prompt.
+        </p>
+      </div>
 
-          {#if loading}
-            <div class="row row-assistant" aria-busy="true">
-              <div class="thinking" aria-label="Researching">
-                <span class="thinking-dot"></span>
-                <span class="thinking-dot"></span>
-                <span class="thinking-dot"></span>
-              </div>
-            </div>
-          {/if}
-        </div>
-      {/if}
-    </div>
-
-    <form class="composer" onsubmit={onSubmit}>
-      <div class="composer-controls">
-        <div class="composer-focus">
+      <div class="ask-controls">
+        <div class="ask-field ask-focus">
           <span class="focus-label">Focus</span>
           <CharacterSearchSelect
             bind:value={focusNameId}
             options={characterOptions}
             getCharacter={getCharacter}
-            placeholder="Any character"
+            placeholder="Select character"
             aria-label="Focus character"
             class="focus-select"
           />
         </div>
-        <div class="composer-provider">
+        <div class="ask-field">
           <span class="focus-label">Model</span>
           <Select
             bind:value={llmProvider}
@@ -366,90 +232,143 @@
             class="provider-select"
           />
         </div>
-        <div class="composer-provider">
-          <span class="focus-label">Style</span>
-          <Select
-            bind:value={answerStyle}
-            options={styleOptions}
-            fit="value"
-            aria-label="Answer style"
-            class="style-select"
-          />
-        </div>
-        <div class="composer-provider composer-personalize">
-          <span class="focus-label">Roster</span>
-          <Toggle
-            bind:pressed={personalize}
-            disabled={loading || !hasOwnedRoster}
-            aria-label="Personalize with roster"
-          />
+      </div>
+
+      <div class="ask-topics" role="group" aria-label="Research topic">
+        <span class="focus-label">Topic</span>
+        <div class="topic-chips">
+          {#each TOPIC_CHIPS as chip (chip.id)}
+            <button
+              type="button"
+              class="topic-chip"
+              class:is-selected={topic === chip.id}
+              class:is-soon={!chip.enabled}
+              disabled={!chip.enabled || loading}
+              aria-pressed={topic === chip.id}
+              onclick={() => selectTopic(chip.id, chip.enabled)}
+            >
+              {chip.label}
+              {#if !chip.enabled}
+                <span class="topic-soon">Soon</span>
+              {/if}
+            </button>
+          {/each}
         </div>
       </div>
-      <div class="composer-box">
-        <textarea
-          id={questionFieldId}
-          bind:this={composerEl}
-          bind:value={draft}
-          rows="1"
-          placeholder="Ask about a character, constellation, rotation, ER…"
-          disabled={loading}
-          aria-label="Question"
-          onkeydown={onComposerKeydown}
-        ></textarea>
-        <Button
-          type="submit"
-          variant="primary"
-          class="send-btn"
-          disabled={!canSend}
-          aria-label={loading ? "Sending" : "Send"}
-        >
+
+      <div class="ask-actions">
+        <Button type="submit" variant="primary" disabled={!canRun}>
           {#if loading}
-            …
+            Running…
           {:else}
-            ↑
+            Run
           {/if}
         </Button>
+        {#if !focusNameId}
+          <p class="ask-hint meta-sub">Select a focus character to run Build.</p>
+        {:else if !providerReady}
+          <p class="ask-hint meta-sub">Agent must be connected before Run.</p>
+        {/if}
       </div>
-      <p class="composer-hint">
-        Enter to send · Shift+Enter for newline
-        <span class="page-meta-sep" aria-hidden="true">·</span>
-        Tunnel <code>8081</code> → agent
-      </p>
     </form>
+
+    <div class="ask-result" bind:this={resultEl} aria-live="polite">
+      {#if loading}
+        <div class="ask-state" aria-busy="true" aria-label="Researching">
+          <span class="thinking-dot"></span>
+          <span class="thinking-dot"></span>
+          <span class="thinking-dot"></span>
+        </div>
+      {:else if error}
+        <div class="ask-state ask-error" role="alert">
+          <p class="section-title">Couldn’t load research</p>
+          <p class="section-lede">{error}</p>
+          <Button variant="secondary" onclick={() => void runAsk()}>Retry</Button>
+        </div>
+      {:else if response && isBuildView}
+        <div class="ask-result-meta">
+          <span class="meta-sub">Build</span>
+          {#if focusLabel}
+            <span class="page-meta-sep" aria-hidden="true">·</span>
+            <span class="meta-sub">{focusLabel}</span>
+          {/if}
+          <span class="page-meta-sep" aria-hidden="true">·</span>
+          <span class="confidence confidence-{response.confidence}">
+            {response.confidence}
+            {#if response.thin_corpus}
+              · thin corpus
+            {/if}
+          </span>
+        </div>
+        <ResearchAnswer
+          markdown={response.answer_markdown}
+          entities={response.entities ?? []}
+          citations={response.citations}
+          disagreements={response.disagreements ?? []}
+          view={response.view ?? null}
+          focus_name_id={response.focus_name_id ?? focusNameId}
+          comparison={null}
+          teams={null}
+          weapon_ranks={response.weapon_ranks ?? []}
+          artifact_ranks={response.artifact_ranks ?? []}
+          artifact_options={response.artifact_options ?? []}
+          stat_priority={response.stat_priority ?? null}
+          er_targets={null}
+          rotation={null}
+        />
+        {#if response.trace}
+          <ResearchTrace trace={response.trace} />
+        {/if}
+      {:else if response}
+        <div class="ask-state ask-error" role="alert">
+          <p class="section-title">Unexpected response</p>
+          <p class="section-lede">
+            Agent did not return a Build view. Retry Build.
+          </p>
+          <Button variant="secondary" onclick={() => void runAsk()}>Retry</Button>
+        </div>
+      {:else}
+        <div class="ask-empty">
+          <p class="section-lede">
+            Choose a focus character, leave topic on Build, then Run.
+          </p>
+        </div>
+      {/if}
+    </div>
   </div>
 {/snippet}
 
 {#if chrome === "page"}
-  <PageShell class="chat-page">
-    <header class="chat-top">
-      <div class="chat-top-text">
+  <PageShell class="ask-page">
+    <header class="ask-top">
+      <div class="ask-top-text">
         <a class="back-link" href={resolve("/dev")}>Dev</a>
         <span class="page-meta-sep" aria-hidden="true">/</span>
-        <h1 class="chat-title">Research</h1>
+        <h1 class="ask-title">Research</h1>
       </div>
       {@render healthPill()}
     </header>
-    {@render chatBody()}
+    {@render askBody()}
   </PageShell>
 {:else}
-  <div class="chat-plain">
-    <header class="chat-top chat-top-plain">
+  <div class="ask-plain">
+    <header class="ask-top ask-top-plain">
       {@render healthPill()}
     </header>
-    {@render chatBody()}
+    {@render askBody()}
   </div>
 {/if}
 
 <style>
-  :global(.page-shell.chat-page) {
+  :global(.page-shell.ask-page) {
     gap: 0;
     max-width: 48rem;
     margin-inline: auto;
     min-height: calc(100dvh - 6rem);
-    padding-bottom: 0;
+    padding-bottom: var(--space-4);
   }
 
-  .chat-plain {
+  .ask-plain {
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -457,7 +376,7 @@
     gap: 0;
   }
 
-  .chat-top {
+  .ask-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -466,20 +385,20 @@
     flex-shrink: 0;
   }
 
-  .chat-top-plain {
+  .ask-top-plain {
     justify-content: flex-end;
     padding-top: 0;
     padding-bottom: var(--space-1);
   }
 
-  .chat-top-text {
+  .ask-top-text {
     display: flex;
     align-items: baseline;
     gap: 0.4rem;
     min-width: 0;
   }
 
-  .chat-title {
+  .ask-title {
     margin: 0;
     font-size: var(--text-base);
     font-weight: 600;
@@ -534,122 +453,50 @@
     cursor: not-allowed;
   }
 
-  .chat-body {
+  .ask-body {
     display: flex;
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    gap: var(--space-3);
-  }
-
-  .thread {
-    flex: 1;
-    min-height: 12rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    scrollbar-gutter: stable;
-  }
-
-  .empty {
-    margin: auto;
-    width: min(100%, 28rem);
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
     gap: var(--space-4);
-    padding: var(--space-6) var(--space-2);
-    text-align: center;
+    overflow: auto;
   }
 
-  .empty :global(.section-title) {
+  .ask-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    flex-shrink: 0;
+  }
+
+  .ask-lede .section-title,
+  .ask-lede .section-lede {
     margin: 0;
   }
 
-  .empty :global(.section-lede) {
-    margin: 0;
-    line-height: 1.45;
+  .ask-lede .section-lede {
+    margin-top: 0.35rem;
   }
 
-  .examples {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-
-  .example {
-    text-align: left;
-    font: inherit;
-    font-size: var(--text-sm);
-    line-height: 1.4;
-    color: var(--foreground-color);
-    background: var(--surface-quiet);
-    border: var(--border-width) solid
-      color-mix(in srgb, var(--foreground-color) 14%, transparent);
-    border-radius: var(--radius-lg);
-    padding: 0.7rem 0.85rem;
-    cursor: pointer;
-    transition: var(--control-transition);
-  }
-
-  .example:hover:not(:disabled) {
-    border-color: var(--accent-1);
-    background: color-mix(in srgb, var(--accent-1) 8%, transparent);
-  }
-
-  .example:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .messages {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-5);
-    padding: var(--space-3) 0 var(--space-4);
-  }
-
-  .row {
-    display: flex;
-    width: 100%;
-  }
-
-  .row-user {
-    justify-content: flex-end;
-  }
-
-  .row-assistant {
-    justify-content: flex-start;
-  }
-
-  .bubble-user {
-    max-width: min(85%, 28rem);
-    padding: 0.65rem 0.9rem;
-    border-radius: 1.1rem 1.1rem var(--radius-sm) 1.1rem;
-    background: color-mix(in srgb, var(--foreground-color) 10%, transparent);
-    border: var(--border-width) solid
-      color-mix(in srgb, var(--foreground-color) 12%, transparent);
-    color: var(--foreground-color);
-    white-space: pre-wrap;
-    line-height: 1.5;
-    font-size: var(--text-base);
-  }
-
-  .msg-assistant {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-
-  .msg-meta {
+  .ask-controls {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 0.45rem 0.65rem;
+    gap: var(--space-3);
+    align-items: flex-end;
   }
 
-  .msg-role {
+  .ask-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+  }
+
+  .ask-focus {
+    flex: 1 1 12rem;
+  }
+
+  .focus-label {
     font-size: var(--text-xs);
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -657,15 +504,96 @@
     color: color-mix(in srgb, var(--foreground-color) 55%, transparent);
   }
 
-  .msg-meta-sep {
-    color: color-mix(in srgb, var(--foreground-color) 35%, transparent);
-    font-size: var(--text-xs);
+  .ask-field :global(.focus-select),
+  .ask-field :global(.provider-select) {
+    min-width: 9rem;
+  }
+
+  .ask-topics {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .topic-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .topic-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius-md);
+    border: var(--border-width) solid
+      color-mix(in srgb, var(--foreground-color) 22%, transparent);
+    background: transparent;
+    font: inherit;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: color-mix(in srgb, var(--foreground-color) 78%, transparent);
+    cursor: pointer;
+    transition: var(--control-transition);
+  }
+
+  .topic-chip.is-selected {
+    border-color: var(--accent-1);
+    color: var(--foreground-color);
+    background: color-mix(in srgb, var(--accent-1) 10%, transparent);
+  }
+
+  .topic-chip:hover:not(:disabled) {
+    color: var(--foreground-color);
+    border-color: color-mix(in srgb, var(--foreground-color) 38%, transparent);
+  }
+
+  .topic-chip:disabled {
+    cursor: not-allowed;
+    border-color: color-mix(in srgb, var(--foreground-color) 14%, transparent);
+    color: color-mix(in srgb, var(--foreground-color) 42%, transparent);
+  }
+
+  .topic-soon {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  .ask-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .ask-hint {
+    margin: 0;
+  }
+
+  .ask-result {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-height: 6rem;
+  }
+
+  .ask-result-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem;
   }
 
   .confidence {
     font-size: var(--text-xs);
-    letter-spacing: 0.03em;
     text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
   }
 
   .confidence-high {
@@ -673,7 +601,7 @@
   }
 
   .confidence-medium {
-    color: #f1c40f;
+    color: color-mix(in srgb, var(--foreground-color) 72%, transparent);
   }
 
   .confidence-low,
@@ -681,44 +609,41 @@
     color: #e67e22;
   }
 
-  .msg-error {
-    width: 100%;
-    padding: 0.75rem 0.9rem;
-    border-radius: var(--radius-lg);
-    border: var(--border-width) solid
-      color-mix(in srgb, #c0392b 35%, var(--border-default));
-    background: color-mix(in srgb, #c0392b 8%, transparent);
+  .ask-empty {
+    padding: 0.5rem 0;
   }
 
-  .msg-error-label {
-    margin: 0 0 0.25rem;
-    font-size: var(--text-xs);
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: #e74c3c;
-  }
-
-  .msg-error-text {
+  .ask-empty .section-lede {
     margin: 0;
-    font-size: var(--text-sm);
-    line-height: 1.45;
-    white-space: pre-wrap;
   }
 
-  .thinking {
-    display: inline-flex;
+  .ask-state {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: 0.75rem 0;
+  }
+
+  .ask-state[aria-busy="true"] {
+    flex-direction: row;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.35rem 0.15rem;
+    justify-content: center;
+    min-height: 5rem;
+    gap: 0.4rem;
+  }
+
+  .ask-state .section-title,
+  .ask-state .section-lede {
+    margin: 0;
   }
 
   .thinking-dot {
-    width: 0.4rem;
-    height: 0.4rem;
+    width: 0.45rem;
+    height: 0.45rem;
     border-radius: 50%;
     background: color-mix(in srgb, var(--foreground-color) 45%, transparent);
-    animation: thinking-pulse 1.1s ease-in-out infinite;
+    animation: ask-pulse 1s ease-in-out infinite;
   }
 
   .thinking-dot:nth-child(2) {
@@ -729,144 +654,15 @@
     animation-delay: 0.3s;
   }
 
-  @keyframes thinking-pulse {
+  @keyframes ask-pulse {
     0%,
-    80%,
     100% {
       opacity: 0.35;
       transform: translateY(0);
     }
-    40% {
+    50% {
       opacity: 1;
       transform: translateY(-0.15rem);
-    }
-  }
-
-  .composer {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    padding: var(--space-2) 0 0;
-    background: linear-gradient(
-      to top,
-      var(--background-color) 72%,
-      transparent
-    );
-  }
-
-  .composer-controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-3);
-  }
-
-  .composer-focus {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    flex: 1 1 12rem;
-    min-width: 0;
-  }
-
-  .composer-provider {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    flex: 0 0 auto;
-  }
-
-  .composer-provider :global(.provider-select),
-  .composer-provider :global(.style-select) {
-    min-width: 7.5rem;
-  }
-
-  .focus-label {
-    font-size: var(--text-xs);
-    color: color-mix(in srgb, var(--foreground-color) 55%, transparent);
-    flex-shrink: 0;
-  }
-
-  .composer-focus :global(.focus-select) {
-    flex: 1;
-    max-width: 18rem;
-  }
-
-  .composer-box {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: end;
-    gap: var(--space-2);
-    padding: 0.55rem 0.55rem 0.55rem 0.85rem;
-    border-radius: 1.15rem;
-    background: var(--surface-raised);
-    border: var(--border-width) solid var(--accent-1);
-    box-shadow: 0 8px 28px color-mix(in srgb, black 28%, transparent);
-  }
-
-  .composer-box:focus-within {
-    outline: 2px solid color-mix(in srgb, var(--accent-1) 40%, transparent);
-    outline-offset: 1px;
-  }
-
-  .composer-box textarea {
-    width: 100%;
-    min-height: 1.5rem;
-    max-height: 10rem;
-    resize: none;
-    border: none;
-    background: transparent;
-    color: var(--foreground-color);
-    font: inherit;
-    font-size: var(--text-base);
-    line-height: 1.45;
-    padding: 0.35rem 0;
-    field-sizing: content;
-  }
-
-  .composer-box textarea:focus {
-    outline: none;
-  }
-
-  .composer-box textarea:disabled {
-    opacity: 0.65;
-  }
-
-  .composer-box :global(.send-btn) {
-    width: 2.1rem;
-    height: 2.1rem;
-    padding: 0;
-    border-radius: var(--radius-pill);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    line-height: 1;
-  }
-
-  .composer-hint {
-    margin: 0;
-    font-size: var(--text-xs);
-    color: color-mix(in srgb, var(--foreground-color) 48%, transparent);
-  }
-
-  .composer-hint code {
-    font-size: inherit;
-  }
-
-  @media (max-width: 640px) {
-    :global(.page-shell.chat-page) {
-      max-width: none;
-      min-height: calc(100dvh - 5rem);
-    }
-
-    .bubble-user {
-      max-width: 92%;
-    }
-
-    .health-pill {
-      max-width: 9rem;
     }
   }
 </style>
