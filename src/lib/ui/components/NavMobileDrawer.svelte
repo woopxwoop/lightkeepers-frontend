@@ -13,6 +13,7 @@
   import { acquireBodyScrollLock } from "$lib/ui/body-scroll-lock";
   import {
     isMainLinkActive,
+    isPathActive,
     isSettingsPage,
     isToolLinkActive,
     isToolsPage,

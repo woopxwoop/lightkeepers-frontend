@@ -103,14 +103,16 @@
           analyticsLoading = false;
           return;
         }
-        analyticsPayload = null;
-        analyticsKey = null;
         analyticsLoading = false;
         analyticsError = isTimeoutError(err)
           ? "Request timed out"
           : err instanceof Error
             ? err.message
             : "Failed to load analytics";
+        // Same-key refresh failed: keep the cached view; only drop state on key change.
+        if (untrack(() => analyticsKey) === key) return;
+        analyticsPayload = null;
+        analyticsKey = null;
       });
   }
 
@@ -179,6 +181,10 @@
         {#if analyticsLoading}
           <p class="analytics-refresh meta-sub" aria-live="polite">
             Refreshing…
+          </p>
+        {:else if analyticsError}
+          <p class="analytics-refresh meta-sub" role="status">
+            {analyticsError}
           </p>
         {/if}
         {#if analyticsPayload.usage.length === 0}
