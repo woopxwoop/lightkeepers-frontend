@@ -69,6 +69,22 @@ export type HandBuild = {
   weaponKey: string;
 };
 
+/** Resolve name_ids to catalog characters for TeamCardHand. */
+export function handCharactersFromMembers<T>(
+  members: string[],
+  mapping: Map<string, T>,
+): (T | undefined)[] {
+  return members.map((id) => mapping.get(id));
+}
+
+/** name_ids to dim for unowned roster members (name_id set). */
+export function dimmedKeysFromMembers(
+  members: string[],
+  ownedNameIds: ReadonlySet<string>,
+): Set<string> {
+  return new Set(members.filter((id) => !ownedNameIds.has(id)));
+}
+
 /** Resolve GOOD keys to catalog characters for TeamCardHand. */
 export function handCharactersFromGoodKeys<T extends Character>(
   keys: string[],

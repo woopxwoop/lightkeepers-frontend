@@ -17,9 +17,9 @@ function summary(partial: Partial<CharacterIndex> = {}): CharacterIndex {
 describe("liveCharacterSummary", () => {
   it("passes through current summaries", () => {
     const live = summary();
-    assert.equal(liveCharacterSummary(live), live);
+    assert.deepEqual(liveCharacterSummary(live), live);
     const flagged = summary({ upToDate: true });
-    assert.equal(liveCharacterSummary(flagged), flagged);
+    assert.deepEqual(liveCharacterSummary(flagged), flagged);
   });
 
   it("treats tombstones as missing", () => {
@@ -34,7 +34,12 @@ describe("liveCharacterSummary", () => {
       upToDate: false,
       weapons: [{ key: "KagurasVerity", teams: 1 }],
     });
-    assert.equal(liveCharacterSummary(stale), stale);
+    assert.deepEqual(liveCharacterSummary(stale), stale);
+  });
+
+  it("returns null for null and undefined without throwing", () => {
+    assert.equal(liveCharacterSummary(null), null);
+    assert.equal(liveCharacterSummary(undefined), null);
   });
 
   it("normalizes missing main_stats and liquid for legacy payloads", () => {
@@ -102,7 +107,7 @@ describe("liveCharacterSummary", () => {
     assert.ok(live);
     assert.deepEqual(live.main_stats.sands, [{ key: "hp_", teams: 2 }]);
     assert.deepEqual(live.main_stats.goblet, [{ key: "hydro_dmg_", teams: 1 }]);
-    assert.deepEqual(live.substat_rolls_liquid.ranked, [
+    assert.deepEqual(live.substat_rolls_liquid?.ranked, [
       { key: "critDMG_", mean: 4 },
     ]);
   });
@@ -128,8 +133,8 @@ describe("liveCharacterSummary", () => {
     const live = liveCharacterSummary(dirty);
     assert.ok(live);
     assert.deepEqual(live.main_stats.sands, [{ key: "def_", teams: 2 }]);
-    assert.equal(live.substat_rolls_liquid.teams, 0);
-    assert.equal(live.substat_rolls_liquid.configs, 0);
+    assert.equal(live.substat_rolls_liquid?.teams, 0);
+    assert.equal(live.substat_rolls_liquid?.configs, 0);
   });
 
   it("filters liquid.mean to nonempty keys with finite numbers", () => {
@@ -158,12 +163,12 @@ describe("liveCharacterSummary", () => {
     });
     const live = liveCharacterSummary(dirty);
     assert.ok(live);
-    assert.deepEqual(live.substat_rolls_liquid.mean, {
+    assert.deepEqual(live.substat_rolls_liquid?.mean, {
       critDMG_: 4,
       ok: 2.5,
     });
     const liveArray = liveCharacterSummary(arrayMean);
     assert.ok(liveArray);
-    assert.deepEqual(liveArray.substat_rolls_liquid.mean, {});
+    assert.deepEqual(liveArray.substat_rolls_liquid?.mean, {});
   });
 });

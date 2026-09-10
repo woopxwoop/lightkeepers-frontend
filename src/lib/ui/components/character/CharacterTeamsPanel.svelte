@@ -22,6 +22,8 @@
     handCharactersFromGoodKeys,
     handBuilds,
     dimmedKeysFromGoodKeys,
+    handCharactersFromMembers,
+    dimmedKeysFromMembers,
   } from "$lib/character-teams";
   import { loadInvestment, getInvestmentCached } from "$lib/app/investment";
   import type { Character, CharacterOwned } from "$lib/definitions";
@@ -56,7 +58,6 @@
   let teamsMode = $state<TeamsMode>("stygian");
   let investment = $state<InvestmentFile | null>(getInvestmentCached());
   let investmentError = $state<string | null>(null);
-  let investmentLoading = $state(false);
   let investmentInFlight: Promise<void> | null = null;
 
   $effect(() => {
@@ -71,7 +72,6 @@
     if (investment) return;
     if (investmentInFlight) return investmentInFlight;
 
-    investmentLoading = true;
     investmentError = null;
     const pending = (async () => {
       try {
@@ -79,8 +79,6 @@
       } catch (e) {
         investmentError =
           e instanceof Error ? e.message : "Failed to load simulated teams";
-      } finally {
-        investmentLoading = false;
       }
     })();
     investmentInFlight = pending;
@@ -114,7 +112,7 @@
 
   let teamsLoading = $derived(
     teamsMode === "simulated"
-      ? investmentLoading && !investment
+      ? !investment && !investmentError
       : !$staticBoardsError &&
           !$staticBoardsLoaded &&
           popularTeams.length === 0,
@@ -135,14 +133,6 @@
 
   function formatDps(dps: number): string {
     return `${(dps / 1000).toFixed(0)}K`;
-  }
-
-  function handCharactersFromMembers(members: string[]) {
-    return members.map((id) => mapping.get(id));
-  }
-
-  function dimmedKeysFromMembers(members: string[]): Set<string> {
-    return new Set(members.filter((id) => !ownedNameIdsSet.has(id)));
   }
 </script>
 
@@ -236,8 +226,8 @@
         {#each popularTeams as team, i (team.team_key ?? i)}
           <li class="team-hand-row">
             <TeamCardHand
-              characters={handCharactersFromMembers(team.members)}
-              dimmedKeys={dimmedKeysFromMembers(team.members)}
+              characters={handCharactersFromMembers(team.members, mapping)}
+              dimmedKeys={dimmedKeysFromMembers(team.members, ownedNameIdsSet)}
               spread="flat"
             />
             <div class="team-hand-footer">

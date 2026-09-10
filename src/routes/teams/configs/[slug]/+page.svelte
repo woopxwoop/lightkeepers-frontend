@@ -84,7 +84,7 @@
 
   {#if rotation && rotation.events.length > 0}
     <section class="section">
-      <h2 class="section-title">Rotation sample (Test)</h2>
+      <h2 class="section-title">Rotation sample</h2>
       <RotationTimeline
         sample={rotation}
         characterByKey={goodKeyMap}
@@ -93,7 +93,7 @@
     </section>
   {:else if sim.kind === "baseline"}
     <section class="section">
-      <h2 class="section-title">Rotation sample (Test)</h2>
+      <h2 class="section-title">Rotation sample</h2>
       <p class="muted">Rotation sample not available for this config.</p>
     </section>
   {/if}

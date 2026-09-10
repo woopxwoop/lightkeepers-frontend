@@ -1,6 +1,7 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import { hasSavedRoster } from "$lib/stores";
+  import { needsRosterSetup } from "$lib/roster-setup";
   import { authClient } from "$lib/auth-client";
   import PageShell from "$lib/ui/components/PageShell.svelte";
   import IconDiscord from "$lib/ui/icons/IconDiscord.svelte";
@@ -19,7 +20,11 @@
 
   /** Show the nudge only when the user has never saved a roster AND isn't logged in. */
   let showNudge = $derived(
-    !$session.isPending && !$hasSavedRoster && !$session.data,
+    needsRosterSetup({
+      sessionPending: $session.isPending,
+      hasSavedRoster: $hasSavedRoster,
+      sessionData: $session.data,
+    }),
   );
 
   type FeatureCard = {

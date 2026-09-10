@@ -65,6 +65,8 @@ export function ensureEquipmentData(): Promise<void> {
   loadPromise = (async () => {
     const [weaponsMod, artifactsMod] = await Promise.all([
       import("$lib/data/weapons.json"),
+      // Descriptions are copied from game files (Hoyoverse wording as-is,
+      // including awkward clauses like Scarlet Proof’s Stellar Swirl 4pc).
       import("$lib/data/artifact-sets.json"),
     ]);
     const weaponsRaw =

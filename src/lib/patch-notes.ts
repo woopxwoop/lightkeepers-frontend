@@ -95,7 +95,7 @@ export function parsePatchNoteMarkdown(
 
 /**
  * Minimal markdown → HTML for trusted author content (patch notes only).
- * Supports paragraphs, ATX h2/h3, unordered lists, links, bold, italic, code.
+ * Supports paragraphs, ATX h2/h3, unordered/ordered lists, links, bold, italic, code.
  */
 export function renderPatchNoteBody(md: string): string {
   const lines = md.replace(/\r\n/g, "\n").split("\n");
@@ -113,6 +113,11 @@ export function renderPatchNoteBody(md: string): string {
     s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
     return s;
   };
+
+  const isListStart = (line: string) =>
+    /^[-*]\s+/.test(line) || /^\d+[.)]\s+/.test(line);
+  const isBlockBoundary = (line: string) =>
+    /^#{2,3}\s/.test(line) || isListStart(line);
 
   while (i < lines.length) {
     const line = lines[i]!;
@@ -138,13 +143,27 @@ export function renderPatchNoteBody(md: string): string {
       out.push(`<ul>${items.join("")}</ul>`);
       continue;
     }
+    if (/^\d+[.)]\s+/.test(line)) {
+      const startMatch = /^(\d+)[.)]\s+/.exec(line);
+      const start = Number.parseInt(startMatch?.[1] ?? "1", 10);
+      const items: string[] = [];
+      while (i < lines.length && /^\d+[.)]\s+/.test(lines[i]!)) {
+        items.push(
+          `<li>${inline(lines[i]!.replace(/^\d+[.)]\s+/, "").trim())}</li>`,
+        );
+        i += 1;
+      }
+      const startAttr =
+        Number.isSafeInteger(start) && start !== 1 ? ` start="${start}"` : "";
+      out.push(`<ol${startAttr}>${items.join("")}</ol>`);
+      continue;
+    }
     const paras: string[] = [line];
     i += 1;
     while (
       i < lines.length &&
       lines[i]!.trim() &&
-      !/^#{2,3}\s/.test(lines[i]!) &&
-      !/^[-*]\s+/.test(lines[i]!)
+      !isBlockBoundary(lines[i]!)
     ) {
       paras.push(lines[i]!);
       i += 1;

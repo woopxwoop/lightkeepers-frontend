@@ -21,6 +21,7 @@ import type {
   StygianTeam,
   StygianVersion,
 } from "$lib/definitions";
+import type { ResearchResponse } from "$lib/research-types";
 import type { TierListPayload } from "$lib/tierlist";
 
 export const E2E_ABYSS_TEAM_TOP = {
@@ -409,3 +410,130 @@ export function e2eStygianEnemyTeamsPayload(
     ],
   };
 }
+
+/** Deterministic research answer for PLAYWRIGHT_E2E (entities + citation). */
+export const E2E_RESEARCH_RESPONSE = {
+  answer_markdown:
+    "[[c:Xingqiu:6]] pairs well with [[weapon:StaffOfHoma]] for Hu Tao vaporize lines.[[cite:2297]]",
+  citations: [
+    {
+      id: 2297,
+      title: "Hu Tao Guide",
+      url: "https://keqingmains.com/hu-tao/",
+      source_tier: "guide",
+      publisher: "KeqingMains",
+      heading_path: "FAQ > C1",
+      quote: "C0 with R1 Homa has a similar damage ceiling to C1 with a strong 4-star.",
+    },
+  ],
+  confidence: "high",
+  thin_corpus: false,
+  entities: [
+    {
+      key: "c:Xingqiu:6",
+      type: "constellation",
+      label: "Xingqiu C6",
+      name_id: "Xingqiu",
+      index: 6,
+      kit_ref: "T256",
+      icon: "UI_Talent_S_Xingqiu_04",
+      description: "Energy-related constellation for Xingqiu.",
+    },
+    {
+      key: "weapon:StaffOfHoma",
+      type: "weapon",
+      label: "Staff of Homa",
+      weapon_key: "StaffOfHoma",
+      icon: "UI_EquipIcon_Pole_Homa",
+    },
+  ],
+} satisfies ResearchResponse;
+
+/** Deterministic Build view for PLAYWRIGHT_E2E (`topic=build`). */
+export const E2E_RESEARCH_BUILD_RESPONSE = {
+  view: "build",
+  focus_name_id: "Hutao",
+  answer_markdown:
+    "Prefer Staff of Homa and Crimson Witch. Prioritize EM sands until vaporize is comfortable.",
+  weapon_ranks: [
+    {
+      rank: 1,
+      key: "StaffOfHoma",
+      note: "Best option for HP-scaling charged attacks",
+      citation_ids: [2297],
+    },
+    {
+      rank: 2,
+      key: "Deathmatch",
+      note: "Strong F2P battle pass option",
+      citation_ids: [2297],
+    },
+  ],
+  artifact_ranks: [
+    {
+      rank: 1,
+      key: "CrimsonWitchOfFlames",
+      note: "Best in most vaporize teams",
+      citation_ids: [2297],
+    },
+  ],
+  artifact_options: [
+    {
+      key: "ShimenawasReminiscence",
+      note: "Situational when skill uptime is low",
+      citation_ids: [2297],
+    },
+  ],
+  stat_priority: {
+    sands: ["EM", "HP%"],
+    goblet: ["Pyro DMG%"],
+    circlet: ["CRIT Rate", "CRIT DMG"],
+    substats: ["EM", "CRIT Rate", "CRIT DMG", "HP%"],
+    notes: "EM sands until comfortable vaporize uptime.",
+    citation_ids: [2297],
+  },
+  entities: [
+    {
+      key: "char:Hutao",
+      type: "character",
+      label: "Hu Tao",
+      name_id: "Hutao",
+    },
+    {
+      key: "weapon:StaffOfHoma",
+      type: "weapon",
+      label: "Staff of Homa",
+      weapon_key: "StaffOfHoma",
+      icon: "UI_EquipIcon_Pole_Homa",
+    },
+    {
+      key: "set:CrimsonWitchOfFlames",
+      type: "artifact_set",
+      label: "Crimson Witch of Flames",
+      set_key: "CrimsonWitchOfFlames",
+    },
+  ],
+  disagreements: [],
+  citations: [
+    {
+      id: 2297,
+      title: "Hu Tao Guide",
+      url: "https://keqingmains.com/hu-tao/",
+      source_tier: "guide",
+      publisher: "KeqingMains",
+      heading_path: "Builds",
+      quote: "Staff of Homa is Hu Tao's best-in-slot weapon in most teams.",
+    },
+  ],
+  confidence: "medium",
+  thin_corpus: false,
+  comparison: null,
+  teams: null,
+  er_targets: null,
+  rotation: null,
+  trace: {
+    path: "build_fast_path",
+    steps: [{ phase: "static", summary: "Build panels from corpus ranks" }],
+    topics: ["build"],
+  },
+} satisfies ResearchResponse;

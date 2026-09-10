@@ -35,6 +35,15 @@ describe("enhanceExtra", () => {
     });
   });
 
+  it("extracts a Hexerei tail separated by escaped carriage returns", () => {
+    const enhanced =
+      "Rewritten opener.\\r\\rHexerei\\rGrants a buff.";
+    assert.deepEqual(enhanceExtra("Original base.", enhanced), {
+      mode: "extra",
+      text: "Hexerei\\rGrants a buff.",
+    });
+  });
+
   it("extracts a Polestar Field tail and discards prose before the heading", () => {
     const enhanced =
       "Some unrelated rewrite.\\n\\nPolestar Field\\nField effect text.";
@@ -67,6 +76,14 @@ describe("enhanceExtra", () => {
     assert.deepEqual(enhanceExtra("Base.", enhanced), {
       mode: "extra",
       text: "Hexerei\nBuff text.",
+    });
+  });
+
+  it("matches CRLF separator runs as CR then LF", () => {
+    const enhanced = "Prose before.\r\n\r\nHexerei\r\nBuff text.";
+    assert.deepEqual(enhanceExtra("Base.", enhanced), {
+      mode: "extra",
+      text: "Hexerei\r\nBuff text.",
     });
   });
 

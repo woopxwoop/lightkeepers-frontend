@@ -621,7 +621,7 @@
   {@const matSrc = mat ? assetUrl(mat.icon) : null}
   <div
     class="farm-face"
-    title={mat ? `${g.name} · ${mat.name} ×${mat.count}` : g.name}
+    title={mat ? `${g.name} · ${mat.name}` : g.name}
   >
     {#if matSrc}
       <img

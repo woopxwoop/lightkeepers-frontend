@@ -52,6 +52,7 @@
     kit,
     builds,
     summaryStale,
+    buildsUnavailable = false,
     elColor,
     goodKey,
     goodKeyMap,
@@ -60,6 +61,7 @@
     kit: CharacterKit;
     builds: CharacterIndex | null;
     summaryStale: boolean;
+    buildsUnavailable?: boolean;
     elColor: string;
     goodKey: string;
     goodKeyMap: Map<string, CharacterOwned>;
@@ -100,7 +102,7 @@
   let levelSection = $derived(levelPrioritySection(builds));
   let ascensionSection = $derived(ascensionPrioritySection(builds));
   let levelIcon = $derived(getUiAssetUrl("UI_ItemIcon_104003"));
-  let ascensionIcon = $derived(getUiAssetUrl("UI_ItemIcon_104003"));
+  let ascensionIcon = $derived(getUiAssetUrl("UI_ItemIcon_104104"));
 
   let consSection = $derived(constellationPrioritySection(builds));
   let sigSection = $derived(sigWeaponPrioritySection(builds));
@@ -717,7 +719,9 @@
   {:else}
     <section class="board-section">
       <p class="muted-note builds-empty-msg">
-        {#if summaryStale}
+        {#if buildsUnavailable}
+          Could not load builds right now.
+        {:else if summaryStale}
           {kit.name}'s Lightkeepers build numbers are outdated after a recent
           kit change.
         {:else}

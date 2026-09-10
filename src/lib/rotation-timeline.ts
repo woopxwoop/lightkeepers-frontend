@@ -384,13 +384,6 @@ export function findBestSwapCycle(
   return best;
 }
 
-/** @deprecated Prefer {@link findBestSwapCycle}. */
-export function findSwapCyclePeriod(
-  swapTargets: readonly string[],
-): number | null {
-  return findBestSwapCycle(swapTargets)?.period ?? null;
-}
-
 export type RotationWindow = {
   /** Inclusive start time (seconds). Setup is included when this is 0. */
   startS: number;
@@ -528,17 +521,6 @@ export function detectRotationWindow(
   }
   // Setup + first loop, inclusive of the next-cycle swap at loopEndS.
   return { startS: 0, endS: loopEndS, loopEndS, loopEndsS, period: best.period };
-}
-
-/**
- * @deprecated Prefer {@link detectRotationWindow}.
- */
-export function detectRotationWindowS(
-  events: readonly RotationSampleEvent[],
-  fallbackS: number = DEFAULT_ROTATION_WINDOW_S,
-  opts?: RotationWindowOpts,
-): number {
-  return detectRotationWindow(events, fallbackS, opts).endS;
 }
 
 /**

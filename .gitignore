@@ -23,7 +23,7 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 .claude
-.cursor/skills/
+.cursor
 DOCKER.md
 cache
 CLAUDE.md

@@ -152,7 +152,11 @@ async function fetchCloudRoster(
       signal: AbortSignal.timeout(ROSTER_FETCH_TIMEOUT_MS),
     });
     if (!res.ok) return { status: "error" };
-    const { roster } = await res.json();
+    const body: unknown = await res.json();
+    if (body === null || typeof body !== "object" || !("roster" in body)) {
+      return { status: "error" };
+    }
+    const roster = (body as { roster: unknown }).roster;
     if (roster === null) return { status: "missing", userId };
     if (!Array.isArray(roster)) return { status: "error" };
     if (roster.length === 0) return { status: "missing", userId };

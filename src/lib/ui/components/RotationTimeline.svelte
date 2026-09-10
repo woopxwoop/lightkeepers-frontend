@@ -67,11 +67,27 @@
   let boundaryLeftPxs = $derived(
     loopBoundaryLeftPxs(layout.markers, rotationWindow.loopEndsS),
   );
+  let laneKeys = $derived.by(() => {
+    const keys: string[] = [];
+    const seen = new Set<string>();
+    for (const key of sample.characters) {
+      if (seen.has(key)) continue;
+      seen.add(key);
+      keys.push(key);
+    }
+    for (const event of annotatedEvents) {
+      const key = event.char;
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      keys.push(key);
+    }
+    return keys;
+  });
   let laneIndexByKey = $derived(
-    new Map(sample.characters.map((key, i) => [key, i])),
+    new Map(laneKeys.map((key, i) => [key, i])),
   );
   let lanes = $derived(
-    sample.characters.map((key) => ({
+    laneKeys.map((key) => ({
       key,
       character: characterByKey.get(key),
       markers: markersForCharacter(layout.markers, key).filter(
@@ -356,6 +372,8 @@
   }
 
   .char-lanes > .lane {
+    position: relative;
+    z-index: 1;
     height: var(--lane-h);
     min-height: var(--lane-h);
     padding: 0;
@@ -466,7 +484,7 @@
     top: 0;
     bottom: 0;
     left: calc(var(--lane-head-w) + var(--lane-grid-gap));
-    z-index: 4;
+    z-index: 0;
     width: var(--track-w);
     overflow: visible;
     pointer-events: none;

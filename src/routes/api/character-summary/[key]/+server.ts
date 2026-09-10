@@ -21,7 +21,7 @@ export const GET: RequestHandler = async ({
   try {
     summary = await getCharacterSummary(key);
   } catch (err) {
-    console.error(`/api/character-summary/${key}:`, err);
+    console.error(`/api/character-summary/${JSON.stringify(key)}:`, err);
     throw error(502, "Failed to fetch character summary from CDN");
   }
   if (!summary) throw error(404, `No Builds summary for ${key}`);

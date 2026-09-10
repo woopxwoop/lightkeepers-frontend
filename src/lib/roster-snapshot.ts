@@ -83,17 +83,7 @@ export function rostersDifferForSync(
   a: CharacterOwned[],
   b: CharacterOwned[],
 ): boolean {
-  const left = toRosterSyncCompareEntries(a);
-  const right = toRosterSyncCompareEntries(b);
-  if (left.length !== right.length) return true;
-  for (let i = 0; i < left.length; i++) {
-    const l = left[i]!;
-    const r = right[i]!;
-    if (l.name_id !== r.name_id) return true;
-    if (l.isOwned !== r.isOwned) return true;
-    if (!sameProgressBits(l.progress, r.progress)) return true;
-  }
-  return false;
+  return diffRostersForSync(a, b).length > 0;
 }
 
 export type RosterSyncWeaponBits = {
@@ -173,17 +163,6 @@ function sameProgressBits(
     a.talents === b.talents &&
     sameWeaponBits(a.weapon, b.weapon)
   );
-}
-
-/** Same owned + progressBits projection used by conflict detection and the diff UI. */
-function toRosterSyncCompareEntries(roster: CharacterOwned[]) {
-  return roster
-    .map((c) => ({
-      name_id: c.name_id,
-      isOwned: c.isOwned,
-      progress: progressBits(c.progress),
-    }))
-    .sort(compareNameId);
 }
 
 /** Per-character owned/progress deltas between local and cloud (unchanged omitted). */

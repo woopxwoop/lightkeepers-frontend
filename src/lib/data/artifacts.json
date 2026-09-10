@@ -4860,6 +4860,186 @@
     "icon": "UI_RelicIcon_15046_5"
   },
   {
+    "id": 23841,
+    "name": "Chalice of Your Blood and Sorrow",
+    "stars": 5,
+    "equipType": "Goblet of Eonothem",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_1"
+  },
+  {
+    "id": 23842,
+    "name": "Glory to Your Legacy",
+    "stars": 5,
+    "equipType": "Plume of Death",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_2"
+  },
+  {
+    "id": 23843,
+    "name": "Testament to Your Faith",
+    "stars": 5,
+    "equipType": "Circlet of Logos",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_3"
+  },
+  {
+    "id": 23844,
+    "name": "Honor to Your Devotion",
+    "stars": 5,
+    "equipType": "Flower of Life",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_4"
+  },
+  {
+    "id": 23845,
+    "name": "Time Gifted Unto You",
+    "stars": 5,
+    "equipType": "Sands of Eon",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_5"
+  },
+  {
+    "id": 23846,
+    "name": "Chalice of Your Blood and Sorrow",
+    "stars": 4,
+    "equipType": "Goblet of Eonothem",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_1"
+  },
+  {
+    "id": 23847,
+    "name": "Glory to Your Legacy",
+    "stars": 4,
+    "equipType": "Plume of Death",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_2"
+  },
+  {
+    "id": 23848,
+    "name": "Testament to Your Faith",
+    "stars": 4,
+    "equipType": "Circlet of Logos",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_3"
+  },
+  {
+    "id": 23849,
+    "name": "Honor to Your Devotion",
+    "stars": 4,
+    "equipType": "Flower of Life",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_4"
+  },
+  {
+    "id": 23850,
+    "name": "Time Gifted Unto You",
+    "stars": 4,
+    "equipType": "Sands of Eon",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_5"
+  },
+  {
+    "id": 23851,
+    "name": "Foundryman's Magnanimity",
+    "stars": 5,
+    "equipType": "Goblet of Eonothem",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_1"
+  },
+  {
+    "id": 23852,
+    "name": "Foundryman's Observation",
+    "stars": 5,
+    "equipType": "Plume of Death",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_2"
+  },
+  {
+    "id": 23853,
+    "name": "Foundryman's Legacy",
+    "stars": 5,
+    "equipType": "Circlet of Logos",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_3"
+  },
+  {
+    "id": 23854,
+    "name": "Foundryman's Conjecture",
+    "stars": 5,
+    "equipType": "Flower of Life",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_4"
+  },
+  {
+    "id": 23855,
+    "name": "Foundryman's Calculus",
+    "stars": 5,
+    "equipType": "Sands of Eon",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_5"
+  },
+  {
+    "id": 23856,
+    "name": "Foundryman's Magnanimity",
+    "stars": 4,
+    "equipType": "Goblet of Eonothem",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_1"
+  },
+  {
+    "id": 23857,
+    "name": "Foundryman's Observation",
+    "stars": 4,
+    "equipType": "Plume of Death",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_2"
+  },
+  {
+    "id": 23858,
+    "name": "Foundryman's Legacy",
+    "stars": 4,
+    "equipType": "Circlet of Logos",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_3"
+  },
+  {
+    "id": 23859,
+    "name": "Foundryman's Conjecture",
+    "stars": 4,
+    "equipType": "Flower of Life",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_4"
+  },
+  {
+    "id": 23860,
+    "name": "Foundryman's Calculus",
+    "stars": 4,
+    "equipType": "Sands of Eon",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_5"
+  },
+  {
     "id": 24101,
     "name": "Gladiator's Intoxication",
     "stars": 5,
@@ -10708,6 +10888,366 @@
     "setId": 15046,
     "setName": "Disenchantment in Deep Shadow",
     "icon": "UI_RelicIcon_15046_5"
+  },
+  {
+    "id": 47412,
+    "name": "Chalice of Your Blood and Sorrow",
+    "stars": 4,
+    "equipType": "Goblet of Eonothem",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_1"
+  },
+  {
+    "id": 47413,
+    "name": "Chalice of Your Blood and Sorrow",
+    "stars": 4,
+    "equipType": "Goblet of Eonothem",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_1"
+  },
+  {
+    "id": 47422,
+    "name": "Glory to Your Legacy",
+    "stars": 4,
+    "equipType": "Plume of Death",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_2"
+  },
+  {
+    "id": 47423,
+    "name": "Glory to Your Legacy",
+    "stars": 4,
+    "equipType": "Plume of Death",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_2"
+  },
+  {
+    "id": 47432,
+    "name": "Testament to Your Faith",
+    "stars": 4,
+    "equipType": "Circlet of Logos",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_3"
+  },
+  {
+    "id": 47433,
+    "name": "Testament to Your Faith",
+    "stars": 4,
+    "equipType": "Circlet of Logos",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_3"
+  },
+  {
+    "id": 47442,
+    "name": "Honor to Your Devotion",
+    "stars": 4,
+    "equipType": "Flower of Life",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_4"
+  },
+  {
+    "id": 47443,
+    "name": "Honor to Your Devotion",
+    "stars": 4,
+    "equipType": "Flower of Life",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_4"
+  },
+  {
+    "id": 47452,
+    "name": "Time Gifted Unto You",
+    "stars": 4,
+    "equipType": "Sands of Eon",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_5"
+  },
+  {
+    "id": 47453,
+    "name": "Time Gifted Unto You",
+    "stars": 4,
+    "equipType": "Sands of Eon",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_5"
+  },
+  {
+    "id": 47513,
+    "name": "Chalice of Your Blood and Sorrow",
+    "stars": 5,
+    "equipType": "Goblet of Eonothem",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_1"
+  },
+  {
+    "id": 47514,
+    "name": "Chalice of Your Blood and Sorrow",
+    "stars": 5,
+    "equipType": "Goblet of Eonothem",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_1"
+  },
+  {
+    "id": 47523,
+    "name": "Glory to Your Legacy",
+    "stars": 5,
+    "equipType": "Plume of Death",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_2"
+  },
+  {
+    "id": 47524,
+    "name": "Glory to Your Legacy",
+    "stars": 5,
+    "equipType": "Plume of Death",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_2"
+  },
+  {
+    "id": 47533,
+    "name": "Testament to Your Faith",
+    "stars": 5,
+    "equipType": "Circlet of Logos",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_3"
+  },
+  {
+    "id": 47534,
+    "name": "Testament to Your Faith",
+    "stars": 5,
+    "equipType": "Circlet of Logos",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_3"
+  },
+  {
+    "id": 47543,
+    "name": "Honor to Your Devotion",
+    "stars": 5,
+    "equipType": "Flower of Life",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_4"
+  },
+  {
+    "id": 47544,
+    "name": "Honor to Your Devotion",
+    "stars": 5,
+    "equipType": "Flower of Life",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_4"
+  },
+  {
+    "id": 47553,
+    "name": "Time Gifted Unto You",
+    "stars": 5,
+    "equipType": "Sands of Eon",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_5"
+  },
+  {
+    "id": 47554,
+    "name": "Time Gifted Unto You",
+    "stars": 5,
+    "equipType": "Sands of Eon",
+    "setId": 15047,
+    "setName": "Scarlet Proof",
+    "icon": "UI_RelicIcon_15047_5"
+  },
+  {
+    "id": 48412,
+    "name": "Foundryman's Magnanimity",
+    "stars": 4,
+    "equipType": "Goblet of Eonothem",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_1"
+  },
+  {
+    "id": 48413,
+    "name": "Foundryman's Magnanimity",
+    "stars": 4,
+    "equipType": "Goblet of Eonothem",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_1"
+  },
+  {
+    "id": 48422,
+    "name": "Foundryman's Observation",
+    "stars": 4,
+    "equipType": "Plume of Death",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_2"
+  },
+  {
+    "id": 48423,
+    "name": "Foundryman's Observation",
+    "stars": 4,
+    "equipType": "Plume of Death",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_2"
+  },
+  {
+    "id": 48432,
+    "name": "Foundryman's Legacy",
+    "stars": 4,
+    "equipType": "Circlet of Logos",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_3"
+  },
+  {
+    "id": 48433,
+    "name": "Foundryman's Legacy",
+    "stars": 4,
+    "equipType": "Circlet of Logos",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_3"
+  },
+  {
+    "id": 48442,
+    "name": "Foundryman's Conjecture",
+    "stars": 4,
+    "equipType": "Flower of Life",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_4"
+  },
+  {
+    "id": 48443,
+    "name": "Foundryman's Conjecture",
+    "stars": 4,
+    "equipType": "Flower of Life",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_4"
+  },
+  {
+    "id": 48452,
+    "name": "Foundryman's Calculus",
+    "stars": 4,
+    "equipType": "Sands of Eon",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_5"
+  },
+  {
+    "id": 48453,
+    "name": "Foundryman's Calculus",
+    "stars": 4,
+    "equipType": "Sands of Eon",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_5"
+  },
+  {
+    "id": 48513,
+    "name": "Foundryman's Magnanimity",
+    "stars": 5,
+    "equipType": "Goblet of Eonothem",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_1"
+  },
+  {
+    "id": 48514,
+    "name": "Foundryman's Magnanimity",
+    "stars": 5,
+    "equipType": "Goblet of Eonothem",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_1"
+  },
+  {
+    "id": 48523,
+    "name": "Foundryman's Observation",
+    "stars": 5,
+    "equipType": "Plume of Death",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_2"
+  },
+  {
+    "id": 48524,
+    "name": "Foundryman's Observation",
+    "stars": 5,
+    "equipType": "Plume of Death",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_2"
+  },
+  {
+    "id": 48533,
+    "name": "Foundryman's Legacy",
+    "stars": 5,
+    "equipType": "Circlet of Logos",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_3"
+  },
+  {
+    "id": 48534,
+    "name": "Foundryman's Legacy",
+    "stars": 5,
+    "equipType": "Circlet of Logos",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_3"
+  },
+  {
+    "id": 48543,
+    "name": "Foundryman's Conjecture",
+    "stars": 5,
+    "equipType": "Flower of Life",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_4"
+  },
+  {
+    "id": 48544,
+    "name": "Foundryman's Conjecture",
+    "stars": 5,
+    "equipType": "Flower of Life",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_4"
+  },
+  {
+    "id": 48553,
+    "name": "Foundryman's Calculus",
+    "stars": 5,
+    "equipType": "Sands of Eon",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_5"
+  },
+  {
+    "id": 48554,
+    "name": "Foundryman's Calculus",
+    "stars": 5,
+    "equipType": "Sands of Eon",
+    "setId": 15048,
+    "setName": "Heart of the Furnace",
+    "icon": "UI_RelicIcon_15048_5"
   },
   {
     "id": 51110,

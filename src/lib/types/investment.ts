@@ -162,7 +162,7 @@ export interface CharacterIndex {
    * Mean OptimFull liquid rolls: average f2p + bp_limited-weapon configs
    * within a team, then average those team-means across teams.
    */
-  substat_rolls_liquid: CharacterLiquidSubstats;
+  substat_rolls_liquid?: CharacterLiquidSubstats;
   /**
    * Mean high OptimFull (30/18/1) liquid allocations across artifact-importance
    * teams. Preferred source for Recommended substats (rebalance signal).

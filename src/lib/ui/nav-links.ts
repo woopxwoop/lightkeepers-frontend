@@ -70,3 +70,24 @@ export function isPathActive(
   if (match === "exact") return pathname === path;
   return pathname === path || pathname.startsWith(`${path}/`);
 }
+
+export function isMainLinkActive(pathname: string, link: MainLink): boolean {
+  return isPathActive(pathname, link.path, link.match);
+}
+
+export function isToolLinkActive(pathname: string, link: ToolsLink): boolean {
+  return isPathActive(pathname, link.path, link.match);
+}
+
+export function isToolsPage(pathname: string): boolean {
+  return isPathActive(pathname, toolsPrefixPath, "prefix");
+}
+
+export function isSettingsPage(pathname: string): boolean {
+  return isPathActive(pathname, settingsPath, "prefix");
+}
+
+/** Settings drawer/submenu tab; missing `tab` defaults to roster. */
+export function settingsTabFromSearch(searchParams: URLSearchParams): string {
+  return searchParams.get("tab") ?? "roster";
+}

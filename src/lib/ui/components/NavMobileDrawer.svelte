@@ -8,16 +8,21 @@
   import IconUser from "$lib/ui/icons/IconUser.svelte";
   import IconCloudUp from "$lib/ui/icons/IconCloudUp.svelte";
   import IconMonitor from "$lib/ui/icons/IconMonitor.svelte";
+  import IconX from "$lib/ui/icons/IconX.svelte";
   import { DISCORD_INVITE_URL } from "$lib/site";
   import { acquireBodyScrollLock } from "$lib/ui/body-scroll-lock";
   import {
+    isMainLinkActive,
     isPathActive,
+    isSettingsPage,
+    isToolLinkActive,
+    isToolsPage,
     mainLinks,
     patchNotesPath,
     settingsLinks,
     settingsPath,
+    settingsTabFromSearch,
     toolsLinks,
-    toolsPrefixPath,
     type MainLink,
     type ToolsLink,
   } from "$lib/ui/nav-links";
@@ -37,20 +42,16 @@
   let closedByNavigation = false;
 
   function isMainActive(link: MainLink): boolean {
-    return isPathActive(page.url.pathname, link.path, link.match);
+    return isMainLinkActive(page.url.pathname, link);
   }
 
   function isToolActive(link: ToolsLink): boolean {
-    return isPathActive(page.url.pathname, link.path, link.match);
+    return isToolLinkActive(page.url.pathname, link);
   }
 
-  const onToolsPage = $derived(
-    isPathActive(page.url.pathname, toolsPrefixPath, "prefix"),
-  );
+  const onToolsPage = $derived(isToolsPage(page.url.pathname));
 
-  const onSettingsPage = $derived(
-    isPathActive(page.url.pathname, settingsPath, "prefix"),
-  );
+  const onSettingsPage = $derived(isSettingsPage(page.url.pathname));
 
   $effect(() => {
     // Include search so Settings ?tab= changes close the mobile drawer too.
@@ -155,6 +156,14 @@
       duration: prefersReducedMotion.current ? 0 : 280,
     }}
   >
+    <button
+      type="button"
+      class="drawer-close"
+      onclick={closeDrawer}
+      aria-label="Close navigation menu"
+    >
+      <IconX size={18} strokeWidth={2.25} />
+    </button>
     <nav class="drawer-nav" aria-label="Primary">
       <p class="eyebrow drawer-section-label">Navigate</p>
 
@@ -208,9 +217,6 @@
           class="drawer-item"
           class:is-active={isMainActive(link)}
           style="--i: {toolsLinks.length + 1 + i}"
-          data-sveltekit-preload-data={"preload" in link
-            ? link.preload
-            : undefined}
           aria-current={isMainActive(link) ? "page" : undefined}
         >
           <span class="drawer-item-label">{link.label}</span>
@@ -250,7 +256,7 @@
           inert={!settingsDrawerExpanded}
         >
           {#each settingsLinks as link, i}
-            {@const activeTab = page.url.searchParams.get("tab") ?? "roster"}
+            {@const activeTab = settingsTabFromSearch(page.url.searchParams)}
             {@const subActive = onSettingsPage && activeTab === link.tab}
             <a
               href={link.path}
@@ -343,6 +349,27 @@
     padding: 0 0.5rem;
     scrollbar-width: none;
     -ms-overflow-style: none;
+  }
+
+  .drawer-close {
+    display: grid;
+    place-items: center;
+    align-self: flex-end;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin: 0 0.5rem 0.35rem;
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--foreground-mid);
+    cursor: pointer;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+
+  .drawer-close:hover {
+    color: var(--foreground-color);
+    background: var(--surface-quiet);
   }
 
   .drawer-nav::-webkit-scrollbar {

@@ -1246,6 +1246,82 @@
     ]
   },
   {
+    "id": 11435,
+    "name": "Heretic's Molten Blade",
+    "stars": 4,
+    "weaponType": "WEAPON_SWORD_ONE_HAND",
+    "icon": "UI_EquipIcon_Sword_SerpentTooth",
+    "awakenIcon": "UI_EquipIcon_Sword_SerpentTooth_Awaken",
+    "splashIcon": "UI_Gacha_EquipIcon_Sword_SerpentTooth",
+    "baseAtk": 509.6,
+    "subStat": {
+      "propType": "FIGHT_PROP_CRITICAL",
+      "label": "CRIT Rate",
+      "value": 0.2756,
+      "isPercent": true
+    },
+    "refinements": [
+      {
+        "rank": 1,
+        "description": "After the equipping character uses their Elemental Skill, they gain \"Gleam of First Light.\" While active, Gleam of First Light tracks their distance traveled. Each second, the equipping character gains an ATK Bonus ranging from 18% to 36% based on the distance traveled during the previous second. Gleam of First Light lasts 14s, can be triggered once every 14s, and is removed when the equipping character leaves the field."
+      },
+      {
+        "rank": 2,
+        "description": "After the equipping character uses their Elemental Skill, they gain \"Gleam of First Light.\" While active, Gleam of First Light tracks their distance traveled. Each second, the equipping character gains an ATK Bonus ranging from 22.5% to 45% based on the distance traveled during the previous second. Gleam of First Light lasts 14s, can be triggered once every 14s, and is removed when the equipping character leaves the field."
+      },
+      {
+        "rank": 3,
+        "description": "After the equipping character uses their Elemental Skill, they gain \"Gleam of First Light.\" While active, Gleam of First Light tracks their distance traveled. Each second, the equipping character gains an ATK Bonus ranging from 27% to 54% based on the distance traveled during the previous second. Gleam of First Light lasts 14s, can be triggered once every 14s, and is removed when the equipping character leaves the field."
+      },
+      {
+        "rank": 4,
+        "description": "After the equipping character uses their Elemental Skill, they gain \"Gleam of First Light.\" While active, Gleam of First Light tracks their distance traveled. Each second, the equipping character gains an ATK Bonus ranging from 31.5% to 63% based on the distance traveled during the previous second. Gleam of First Light lasts 14s, can be triggered once every 14s, and is removed when the equipping character leaves the field."
+      },
+      {
+        "rank": 5,
+        "description": "After the equipping character uses their Elemental Skill, they gain \"Gleam of First Light.\" While active, Gleam of First Light tracks their distance traveled. Each second, the equipping character gains an ATK Bonus ranging from 36% to 72% based on the distance traveled during the previous second. Gleam of First Light lasts 14s, can be triggered once every 14s, and is removed when the equipping character leaves the field."
+      }
+    ]
+  },
+  {
+    "id": 11436,
+    "name": "Emberwell",
+    "stars": 4,
+    "weaponType": "WEAPON_SWORD_ONE_HAND",
+    "icon": "UI_EquipIcon_Sword_GlintstoneSword",
+    "awakenIcon": "UI_EquipIcon_Sword_GlintstoneSword_Awaken",
+    "splashIcon": "UI_Gacha_EquipIcon_Sword_GlintstoneSword",
+    "baseAtk": 509.6,
+    "subStat": {
+      "propType": "FIGHT_PROP_ELEMENT_MASTERY",
+      "label": "Elemental Mastery",
+      "value": 165.4,
+      "isPercent": false
+    },
+    "refinements": [
+      {
+        "rank": 1,
+        "description": "Triggering an Elemental Reaction increases the equipping character's ATK by 16% for 12s. Triggering a Stellar Glimmer reaction increases their Stellar Glimmer reaction DMG dealt by 16% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 2,
+        "description": "Triggering an Elemental Reaction increases the equipping character's ATK by 20% for 12s. Triggering a Stellar Glimmer reaction increases their Stellar Glimmer reaction DMG dealt by 20% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 3,
+        "description": "Triggering an Elemental Reaction increases the equipping character's ATK by 24% for 12s. Triggering a Stellar Glimmer reaction increases their Stellar Glimmer reaction DMG dealt by 24% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 4,
+        "description": "Triggering an Elemental Reaction increases the equipping character's ATK by 28% for 12s. Triggering a Stellar Glimmer reaction increases their Stellar Glimmer reaction DMG dealt by 28% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 5,
+        "description": "Triggering an Elemental Reaction increases the equipping character's ATK by 32% for 12s. Triggering a Stellar Glimmer reaction increases their Stellar Glimmer reaction DMG dealt by 32% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      }
+    ]
+  },
+  {
     "id": 11501,
     "name": "Aquila Favonia",
     "stars": 5,
@@ -1850,6 +1926,82 @@
       {
         "rank": 5,
         "description": "Increases DEF by 40%. DMG inflicted by Lunar-Crystallize reactions increases by 128% for 5s after the equipping character uses an Elemental Skill."
+      }
+    ]
+  },
+  {
+    "id": 11520,
+    "name": "Whitelake Frostfeather",
+    "stars": 5,
+    "weaponType": "WEAPON_SWORD_ONE_HAND",
+    "icon": "UI_EquipIcon_Sword_Swanlake",
+    "awakenIcon": "UI_EquipIcon_Sword_Swanlake_Awaken",
+    "splashIcon": "UI_Gacha_EquipIcon_Sword_Swanlake",
+    "baseAtk": 674.3,
+    "subStat": {
+      "propType": "FIGHT_PROP_CRITICAL",
+      "label": "CRIT Rate",
+      "value": 0.2205,
+      "isPercent": true
+    },
+    "refinements": [
+      {
+        "rank": 1,
+        "description": "When the equipping character hits an opponent with their Elemental Skill, they gain \"Lake-Hued Lament\": ATK increases by 8% for 8s. This effect can trigger once every 0.1s. Max 3 stacks, and each stack's duration is independent. At 3 stacks, the CRIT DMG of any Stellar Glimmer reaction DMG caused by the equipping character is increased by 50%, and triggering Stellar Glimmer reactions or Stellar Glimmer reaction DMG will also restore 4 Elemental Energy to the character. This Energy recovery effect can trigger once every 3.5s. Can be triggered even when the equipping character is off-field."
+      },
+      {
+        "rank": 2,
+        "description": "When the equipping character hits an opponent with their Elemental Skill, they gain \"Lake-Hued Lament\": ATK increases by 10% for 8s. This effect can trigger once every 0.1s. Max 3 stacks, and each stack's duration is independent. At 3 stacks, the CRIT DMG of any Stellar Glimmer reaction DMG caused by the equipping character is increased by 65%, and triggering Stellar Glimmer reactions or Stellar Glimmer reaction DMG will also restore 4.5 Elemental Energy to the character. This Energy recovery effect can trigger once every 3.5s. Can be triggered even when the equipping character is off-field."
+      },
+      {
+        "rank": 3,
+        "description": "When the equipping character hits an opponent with their Elemental Skill, they gain \"Lake-Hued Lament\": ATK increases by 12% for 8s. This effect can trigger once every 0.1s. Max 3 stacks, and each stack's duration is independent. At 3 stacks, the CRIT DMG of any Stellar Glimmer reaction DMG caused by the equipping character is increased by 80%, and triggering Stellar Glimmer reactions or Stellar Glimmer reaction DMG will also restore 5 Elemental Energy to the character. This Energy recovery effect can trigger once every 3.5s. Can be triggered even when the equipping character is off-field."
+      },
+      {
+        "rank": 4,
+        "description": "When the equipping character hits an opponent with their Elemental Skill, they gain \"Lake-Hued Lament\": ATK increases by 14% for 8s. This effect can trigger once every 0.1s. Max 3 stacks, and each stack's duration is independent. At 3 stacks, the CRIT DMG of any Stellar Glimmer reaction DMG caused by the equipping character is increased by 95%, and triggering Stellar Glimmer reactions or Stellar Glimmer reaction DMG will also restore 5.5 Elemental Energy to the character. This Energy recovery effect can trigger once every 3.5s. Can be triggered even when the equipping character is off-field."
+      },
+      {
+        "rank": 5,
+        "description": "When the equipping character hits an opponent with their Elemental Skill, they gain \"Lake-Hued Lament\": ATK increases by 16% for 8s. This effect can trigger once every 0.1s. Max 3 stacks, and each stack's duration is independent. At 3 stacks, the CRIT DMG of any Stellar Glimmer reaction DMG caused by the equipping character is increased by 110%, and triggering Stellar Glimmer reactions or Stellar Glimmer reaction DMG will also restore 6 Elemental Energy to the character. This Energy recovery effect can trigger once every 3.5s. Can be triggered even when the equipping character is off-field."
+      }
+    ]
+  },
+  {
+    "id": 11521,
+    "name": "Exaiphanes Blade",
+    "stars": 5,
+    "weaponType": "WEAPON_SWORD_ONE_HAND",
+    "icon": "UI_EquipIcon_Sword_WeaponQuestSnezhnaya",
+    "awakenIcon": "UI_EquipIcon_Sword_WeaponQuestSnezhnaya",
+    "splashIcon": "UI_Gacha_EquipIcon_Sword_WeaponQuestSnezhnaya",
+    "baseAtk": 608.1,
+    "subStat": {
+      "propType": "FIGHT_PROP_CRITICAL",
+      "label": "CRIT Rate",
+      "value": 0.3308,
+      "isPercent": true
+    },
+    "refinements": [
+      {
+        "rank": 1,
+        "description": "When the Traveler equips this, their ATK will increase by 16% for 8s after they hit an opponent. At the same time, they will also regenerate 3 Elemental Energy. This effect can trigger once every 5s. This can be triggered even when the character is not on the field."
+      },
+      {
+        "rank": 2,
+        "description": "When the Traveler equips this, their CRIT DMG increases by 6% for every Element they have resonated with. Additionally, the Traveler's ATK will also increase by 20% for 8s, and regenerate 3 Elemental Energy, after they attack and hit an opponent. This effect can trigger once every 5s. This can be triggered even when the character is not on the field."
+      },
+      {
+        "rank": 3,
+        "description": "When the Traveler equips this, their CRIT DMG increases by 6% for every Element they have resonated with. Additionally, the Traveler's ATK will also increase by 24% for 8s, and regenerate 5 Elemental Energy, after they attack and hit an opponent. This effect can trigger once every 5s. This can be triggered even when the character is not on the field."
+      },
+      {
+        "rank": 4,
+        "description": "When the Traveler equips this, their CRIT DMG increases by 6% for every Element they have resonated with. Additionally, the Traveler's ATK will also increase by 32% for 8s, and regenerate 5 Elemental Energy, after they attack and hit an opponent. This effect can trigger once every 5s. This can be triggered even when the character is not on the field."
+      },
+      {
+        "rank": 5,
+        "description": "When the Traveler equips this, their CRIT DMG increases by 6% for every Element they have resonated with. Additionally, the Traveler's ATK will also increase by 40% for 8s, and regenerate 5 Elemental Energy, after they attack and hit an opponent. This effect can trigger once every 5s. This can be triggered even when the character is not on the field."
       }
     ]
   },
@@ -3018,6 +3170,82 @@
     ]
   },
   {
+    "id": 12435,
+    "name": "Forged by the Golden Melody",
+    "stars": 4,
+    "weaponType": "WEAPON_CLAYMORE",
+    "icon": "UI_EquipIcon_Claymore_EscapeWheel",
+    "awakenIcon": "UI_EquipIcon_Claymore_EscapeWheel_Awaken",
+    "splashIcon": "UI_Gacha_EquipIcon_Claymore_EscapeWheel",
+    "baseAtk": 509.6,
+    "subStat": {
+      "propType": "FIGHT_PROP_CRITICAL",
+      "label": "CRIT Rate",
+      "value": 0.2756,
+      "isPercent": true
+    },
+    "refinements": [
+      {
+        "rank": 1,
+        "description": "Every 10s, the equipping character plays a \"Harmonic Movement\" of the corresponding type for a boost in the following order: +18% ATK > +120 Elemental Mastery > +28% Stellar Glimmer reaction DMG. Each instance of Harmonic Movement lasts 10s. This effect can trigger even when the equipping character is not on the field.\\nTriggering a Stellar Glimmer reaction will also grant an additional 12-second instance of \"Harmonic Movement: Contrapuntal\" with the same effects as the Harmonic Movement active when Stellar Glimmer is triggered. This effect stacks with the original Harmonic Movement effect, and can trigger once every 12s."
+      },
+      {
+        "rank": 2,
+        "description": "Every 10s, the equipping character plays a \"Harmonic Movement\" of the corresponding type for a boost in the following order: +22.5% ATK > +150 Elemental Mastery > +35% Stellar Glimmer reaction DMG. Each instance of Harmonic Movement lasts 10s. This effect can trigger even when the equipping character is not on the field.\\nTriggering a Stellar Glimmer reaction will also grant an additional 12-second instance of \"Harmonic Movement: Contrapuntal\" with the same effects as the Harmonic Movement active when Stellar Glimmer is triggered. This effect stacks with the original Harmonic Movement effect, and can trigger once every 12s."
+      },
+      {
+        "rank": 3,
+        "description": "Every 10s, the equipping character plays a \"Harmonic Movement\" of the corresponding type for a boost in the following order: +27% ATK > +180 Elemental Mastery > +42% Stellar Glimmer reaction DMG. Each instance of Harmonic Movement lasts 10s. This effect can trigger even when the equipping character is not on the field.\\nTriggering a Stellar Glimmer reaction will also grant an additional 12-second instance of \"Harmonic Movement: Contrapuntal\" with the same effects as the Harmonic Movement active when Stellar Glimmer is triggered. This effect stacks with the original Harmonic Movement effect, and can trigger once every 12s."
+      },
+      {
+        "rank": 4,
+        "description": "Every 10s, the equipping character plays a \"Harmonic Movement\" of the corresponding type for a boost in the following order: +31.5% ATK > +210 Elemental Mastery > +49% Stellar Glimmer reaction DMG. Each instance of Harmonic Movement lasts 10s. This effect can trigger even when the equipping character is not on the field.\\nTriggering a Stellar Glimmer reaction will also grant an additional 12-second instance of \"Harmonic Movement: Contrapuntal\" with the same effects as the Harmonic Movement active when Stellar Glimmer is triggered. This effect stacks with the original Harmonic Movement effect, and can trigger once every 12s."
+      },
+      {
+        "rank": 5,
+        "description": "Every 10s, the equipping character plays a \"Harmonic Movement\" of the corresponding type for a boost in the following order: +36% ATK > +240 Elemental Mastery > +56% Stellar Glimmer reaction DMG. Each instance of Harmonic Movement lasts 10s. This effect can trigger even when the equipping character is not on the field.\\nTriggering a Stellar Glimmer reaction will also grant an additional 12-second instance of \"Harmonic Movement: Contrapuntal\" with the same effects as the Harmonic Movement active when Stellar Glimmer is triggered. This effect stacks with the original Harmonic Movement effect, and can trigger once every 12s."
+      }
+    ]
+  },
+  {
+    "id": 12436,
+    "name": "Blade of Atonement",
+    "stars": 4,
+    "weaponType": "WEAPON_CLAYMORE",
+    "icon": "UI_EquipIcon_Claymore_GlintstoneClaymore",
+    "awakenIcon": "UI_EquipIcon_Claymore_GlintstoneClaymore_Awaken",
+    "splashIcon": "UI_Gacha_EquipIcon_Claymore_GlintstoneClaymore",
+    "baseAtk": 564.8,
+    "subStat": {
+      "propType": "FIGHT_PROP_ATTACK_PERCENT",
+      "label": "ATK",
+      "value": 0.2756,
+      "isPercent": true
+    },
+    "refinements": [
+      {
+        "rank": 1,
+        "description": "Triggering an Elemental Reaction increases the equipping character's Elemental Mastery by 64 for 12s, while triggering a Stellar Glimmer reaction increases their ATK by 16% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 2,
+        "description": "Triggering an Elemental Reaction increases the equipping character's Elemental Mastery by 80 for 12s, while triggering a Stellar Glimmer reaction increases their ATK by 20% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 3,
+        "description": "Triggering an Elemental Reaction increases the equipping character's Elemental Mastery by 96 for 12s, while triggering a Stellar Glimmer reaction increases their ATK by 24% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 4,
+        "description": "Triggering an Elemental Reaction increases the equipping character's Elemental Mastery by 112 for 12s, while triggering a Stellar Glimmer reaction increases their ATK by 28% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 5,
+        "description": "Triggering an Elemental Reaction increases the equipping character's Elemental Mastery by 128 for 12s, while triggering a Stellar Glimmer reaction increases their ATK by 32% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      }
+    ]
+  },
+  {
     "id": 12501,
     "name": "Skyward Pride",
     "stars": 5,
@@ -3415,23 +3643,23 @@
     "refinements": [
       {
         "rank": 1,
-        "description": "ATK is increased by 28%.\\nAdditionally, each time the equipping character hits an opponent with their Charged Attack, they attain \"Transcendence\" for a short time: their Stellar-Conduct DMG is increased by 16% for 5s. This effect can stack once every 0.2s, max 3 stacks."
+        "description": "ATK is increased by 28%.\\nAdditionally, each time the equipping character hits an opponent with their Charged Attack, they attain \"Transcendence\" for a short time: their Stellar-Conduct and Stellar Swirl reaction DMG is increased by 16% for 5s. This effect can stack once every 0.2s, max 3 stacks."
       },
       {
         "rank": 2,
-        "description": "ATK is increased by 35%.\\nAdditionally, each time the equipping character hits an opponent with their Charged Attack, they attain \"Transcendence\" for a short time: their Stellar-Conduct DMG is increased by 20% for 5s. This effect can stack once every 0.2s, max 3 stacks."
+        "description": "ATK is increased by 35%.\\nAdditionally, each time the equipping character hits an opponent with their Charged Attack, they attain \"Transcendence\" for a short time: their Stellar-Conduct and Stellar Swirl reaction DMG is increased by 20% for 5s. This effect can stack once every 0.2s, max 3 stacks."
       },
       {
         "rank": 3,
-        "description": "ATK is increased by 42%.\\nAdditionally, each time the equipping character hits an opponent with their Charged Attack, they attain \"Transcendence\" for a short time: their Stellar-Conduct DMG is increased by 24% for 5s. This effect can stack once every 0.2s, max 3 stacks."
+        "description": "ATK is increased by 42%.\\nAdditionally, each time the equipping character hits an opponent with their Charged Attack, they attain \"Transcendence\" for a short time: their Stellar-Conduct and Stellar Swirl reaction DMG is increased by 24% for 5s. This effect can stack once every 0.2s, max 3 stacks."
       },
       {
         "rank": 4,
-        "description": "ATK is increased by 49%.\\nAdditionally, each time the equipping character hits an opponent with their Charged Attack, they attain \"Transcendence\" for a short time: their Stellar-Conduct DMG is increased by 28% for 5s. This effect can stack once every 0.2s, max 3 stacks."
+        "description": "ATK is increased by 49%.\\nAdditionally, each time the equipping character hits an opponent with their Charged Attack, they attain \"Transcendence\" for a short time: their Stellar-Conduct and Stellar Swirl reaction DMG is increased by 28% for 5s. This effect can stack once every 0.2s, max 3 stacks."
       },
       {
         "rank": 5,
-        "description": "ATK is increased by 56%.\\nAdditionally, each time the equipping character hits an opponent with their Charged Attack, they attain \"Transcendence\" for a short time: their Stellar-Conduct DMG is increased by 32% for 5s. This effect can stack once every 0.2s, max 3 stacks."
+        "description": "ATK is increased by 56%.\\nAdditionally, each time the equipping character hits an opponent with their Charged Attack, they attain \"Transcendence\" for a short time: their Stellar-Conduct and Stellar Swirl reaction DMG is increased by 32% for 5s. This effect can stack once every 0.2s, max 3 stacks."
       }
     ]
   },
@@ -4444,6 +4672,82 @@
       {
         "rank": 5,
         "description": "For 6s after an Elemental Skill hits an opponent, ATK is increased by 16% and Energy Recharge is increased by 12%. Max 3 stacks. This effect can be triggered even when the equipping character is off-field."
+      }
+    ]
+  },
+  {
+    "id": 13435,
+    "name": "Frostbreath",
+    "stars": 4,
+    "weaponType": "WEAPON_POLE",
+    "icon": "UI_EquipIcon_Pole_FaesCrystalle",
+    "awakenIcon": "UI_EquipIcon_Pole_FaesCrystalle_Awaken",
+    "splashIcon": "UI_Gacha_EquipIcon_Pole_FaesCrystalle",
+    "baseAtk": 509.6,
+    "subStat": {
+      "propType": "FIGHT_PROP_CHARGE_EFFICIENCY",
+      "label": "Energy Recharge",
+      "value": 0.4594,
+      "isPercent": true
+    },
+    "refinements": [
+      {
+        "rank": 1,
+        "description": "Triggering a Cryo or Hydro-related elemental reaction increases the equipping character's ATK by 20% for the next 15s, as well as regenerates 6 Elemental Energy for other members of their party. This effect can trigger once every 16s."
+      },
+      {
+        "rank": 2,
+        "description": "Triggering a Cryo or Hydro-related elemental reaction increases the equipping character's ATK by 25% for the next 15s, as well as regenerates 7.5 Elemental Energy for other members of their party. This effect can trigger once every 16s."
+      },
+      {
+        "rank": 3,
+        "description": "Triggering a Cryo or Hydro-related elemental reaction increases the equipping character's ATK by 30% for the next 15s, as well as regenerates 9 Elemental Energy for other members of their party. This effect can trigger once every 16s."
+      },
+      {
+        "rank": 4,
+        "description": "Triggering a Cryo or Hydro-related elemental reaction increases the equipping character's ATK by 35% for the next 15s, as well as regenerates 10.5 Elemental Energy for other members of their party. This effect can trigger once every 16s."
+      },
+      {
+        "rank": 5,
+        "description": "Triggering a Cryo or Hydro-related elemental reaction increases the equipping character's ATK by 40% for the next 15s, as well as regenerates 12 Elemental Energy for other members of their party. This effect can trigger once every 16s."
+      }
+    ]
+  },
+  {
+    "id": 13436,
+    "name": "Song of the Vigil",
+    "stars": 4,
+    "weaponType": "WEAPON_POLE",
+    "icon": "UI_EquipIcon_Pole_GlintstonePolearm",
+    "awakenIcon": "UI_EquipIcon_Pole_GlintstonePolearm_Awaken",
+    "splashIcon": "UI_Gacha_EquipIcon_Pole_GlintstonePolearm",
+    "baseAtk": 564.8,
+    "subStat": {
+      "propType": "FIGHT_PROP_ELEMENT_MASTERY",
+      "label": "Elemental Mastery",
+      "value": 110.3,
+      "isPercent": false
+    },
+    "refinements": [
+      {
+        "rank": 1,
+        "description": "Triggering an Elemental Reaction regenerates 4 Elemental Energy for the equipping character. This effect can trigger once every 9s. On the other hand, triggering a Stellar Glimmer reaction increases their ATK by 20% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 2,
+        "description": "Triggering an Elemental Reaction regenerates 5 Elemental Energy for the equipping character. This effect can trigger once every 9s. On the other hand, triggering a Stellar Glimmer reaction increases their ATK by 25% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 3,
+        "description": "Triggering an Elemental Reaction regenerates 6 Elemental Energy for the equipping character. This effect can trigger once every 9s. On the other hand, triggering a Stellar Glimmer reaction increases their ATK by 30% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 4,
+        "description": "Triggering an Elemental Reaction regenerates 7 Elemental Energy for the equipping character. This effect can trigger once every 9s. On the other hand, triggering a Stellar Glimmer reaction increases their ATK by 35% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 5,
+        "description": "Triggering an Elemental Reaction regenerates 8 Elemental Energy for the equipping character. This effect can trigger once every 9s. On the other hand, triggering a Stellar Glimmer reaction increases their ATK by 40% for 12s. The aforementioned effects can trigger even when the character is not on the field."
       }
     ]
   },
@@ -6106,6 +6410,82 @@
     ]
   },
   {
+    "id": 14435,
+    "name": "Clash of Kings",
+    "stars": 4,
+    "weaponType": "WEAPON_CATALYST",
+    "icon": "UI_EquipIcon_Catalyst_SandMemoria",
+    "awakenIcon": "UI_EquipIcon_Catalyst_SandMemoria_Awaken",
+    "splashIcon": "UI_Gacha_EquipIcon_Catalyst_SandMemoria",
+    "baseAtk": 509.6,
+    "subStat": {
+      "propType": "FIGHT_PROP_CRITICAL",
+      "label": "CRIT Rate",
+      "value": 0.2756,
+      "isPercent": true
+    },
+    "refinements": [
+      {
+        "rank": 1,
+        "description": "Using an Elemental Skill grants the equipping character \"Laws of the Board,\" which increases their ATK by 20% and their Elemental Mastery by 100. This effect lasts 6s and can trigger once every 12s. Does not stack. The duration of this effect will also be extended by 6s if the equipping character hits an opponent with a Charged Attack while it is active. The effect can be extended for max 6s in this way."
+      },
+      {
+        "rank": 2,
+        "description": "Using an Elemental Skill grants the equipping character \"Laws of the Board,\" which increases their ATK by 25% and their Elemental Mastery by 125. This effect lasts 6s and can trigger once every 12s. Does not stack. The duration of this effect will also be extended by 6s if the equipping character hits an opponent with a Charged Attack while it is active. The effect can be extended for max 6s in this way."
+      },
+      {
+        "rank": 3,
+        "description": "Using an Elemental Skill grants the equipping character \"Laws of the Board,\" which increases their ATK by 30% and their Elemental Mastery by 150. This effect lasts 6s and can trigger once every 12s. Does not stack. The duration of this effect will also be extended by 6s if the equipping character hits an opponent with a Charged Attack while it is active. The effect can be extended for max 6s in this way."
+      },
+      {
+        "rank": 4,
+        "description": "Using an Elemental Skill grants the equipping character \"Laws of the Board,\" which increases their ATK by 35% and their Elemental Mastery by 175. This effect lasts 6s and can trigger once every 12s. Does not stack. The duration of this effect will also be extended by 6s if the equipping character hits an opponent with a Charged Attack while it is active. The effect can be extended for max 6s in this way."
+      },
+      {
+        "rank": 5,
+        "description": "Using an Elemental Skill grants the equipping character \"Laws of the Board,\" which increases their ATK by 40% and their Elemental Mastery by 200. This effect lasts 6s and can trigger once every 12s. Does not stack. The duration of this effect will also be extended by 6s if the equipping character hits an opponent with a Charged Attack while it is active. The effect can be extended for max 6s in this way."
+      }
+    ]
+  },
+  {
+    "id": 14436,
+    "name": "Echoes of the Heart",
+    "stars": 4,
+    "weaponType": "WEAPON_CATALYST",
+    "icon": "UI_EquipIcon_Catalyst_GlintstoneCatalyst",
+    "awakenIcon": "UI_EquipIcon_Catalyst_GlintstoneCatalyst_Awaken",
+    "splashIcon": "UI_Gacha_EquipIcon_Catalyst_GlintstoneCatalyst",
+    "baseAtk": 564.8,
+    "subStat": {
+      "propType": "FIGHT_PROP_ATTACK_PERCENT",
+      "label": "ATK",
+      "value": 0.2756,
+      "isPercent": true
+    },
+    "refinements": [
+      {
+        "rank": 1,
+        "description": "Triggering an Elemental Reaction increases the equipping character's Elemental Mastery by 60 for 12s, while triggering a Stellar Glimmer reaction increases their Stellar Glimmer reaction DMG dealt by 16% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 2,
+        "description": "Triggering an Elemental Reaction increases the equipping character's Elemental Mastery by 75 for 12s, while triggering a Stellar Glimmer reaction increases their Stellar Glimmer reaction DMG dealt by 20% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 3,
+        "description": "Triggering an Elemental Reaction increases the equipping character's Elemental Mastery by 90 for 12s, while triggering a Stellar Glimmer reaction increases their Stellar Glimmer reaction DMG dealt by 24% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 4,
+        "description": "Triggering an Elemental Reaction increases the equipping character's Elemental Mastery by 105 for 12s, while triggering a Stellar Glimmer reaction increases their Stellar Glimmer reaction DMG dealt by 28% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      },
+      {
+        "rank": 5,
+        "description": "Triggering an Elemental Reaction increases the equipping character's Elemental Mastery by 120 for 12s, while triggering a Stellar Glimmer reaction increases their Stellar Glimmer reaction DMG dealt by 32% for 12s. The aforementioned effects can trigger even when the character is not on the field."
+      }
+    ]
+  },
+  {
     "id": 14501,
     "name": "Skyward Atlas",
     "stars": 5,
@@ -6617,23 +6997,23 @@
     "refinements": [
       {
         "rank": 1,
-        "description": "Elemental Mastery increases by 120 for 6s after triggering Swirl. Elemental Mastery increases by 96 for 9s after the wielder's Elemental Skill hits an opponent. Elemental Mastery increases by 32 for 30s after the wielder's Elemental Burst hits an opponent."
+        "description": "Elemental Mastery increases by 120 for 6s after triggering Swirl or Stellar Swirl. Elemental Mastery increases by 96 for 9s after the wielder's Elemental Skill hits an opponent. Elemental Mastery increases by 32 for 30s after the wielder's Elemental Burst hits an opponent."
       },
       {
         "rank": 2,
-        "description": "Elemental Mastery increases by 150 for 6s after triggering Swirl. Elemental Mastery increases by 120 for 9s after the wielder's Elemental Skill hits an opponent. Elemental Mastery increases by 40 for 30s after the wielder's Elemental Burst hits an opponent."
+        "description": "Elemental Mastery increases by 150 for 6s after triggering Swirl or Stellar Swirl. Elemental Mastery increases by 120 for 9s after the wielder's Elemental Skill hits an opponent. Elemental Mastery increases by 40 for 30s after the wielder's Elemental Burst hits an opponent."
       },
       {
         "rank": 3,
-        "description": "Elemental Mastery increases by 180 for 6s after triggering Swirl. Elemental Mastery increases by 144 for 9s after the wielder's Elemental Skill hits an opponent. Elemental Mastery increases by 48 for 30s after the wielder's Elemental Burst hits an opponent."
+        "description": "Elemental Mastery increases by 180 for 6s after triggering Swirl or Stellar Swirl. Elemental Mastery increases by 144 for 9s after the wielder's Elemental Skill hits an opponent. Elemental Mastery increases by 48 for 30s after the wielder's Elemental Burst hits an opponent."
       },
       {
         "rank": 4,
-        "description": "Elemental Mastery increases by 210 for 6s after triggering Swirl. Elemental Mastery increases by 168 for 9s after the wielder's Elemental Skill hits an opponent. Elemental Mastery increases by 56 for 30s after the wielder's Elemental Burst hits an opponent."
+        "description": "Elemental Mastery increases by 210 for 6s after triggering Swirl or Stellar Swirl. Elemental Mastery increases by 168 for 9s after the wielder's Elemental Skill hits an opponent. Elemental Mastery increases by 56 for 30s after the wielder's Elemental Burst hits an opponent."
       },
       {
         "rank": 5,
-        "description": "Elemental Mastery increases by 240 for 6s after triggering Swirl. Elemental Mastery increases by 192 for 9s after the wielder's Elemental Skill hits an opponent. Elemental Mastery increases by 64 for 30s after the wielder's Elemental Burst hits an opponent."
+        "description": "Elemental Mastery increases by 240 for 6s after triggering Swirl or Stellar Swirl. Elemental Mastery increases by 192 for 9s after the wielder's Elemental Skill hits an opponent. Elemental Mastery increases by 64 for 30s after the wielder's Elemental Burst hits an opponent."
       }
     ]
   },
@@ -8090,6 +8470,82 @@
     ]
   },
   {
+    "id": 15435,
+    "name": "Jade Vista",
+    "stars": 4,
+    "weaponType": "WEAPON_BOW",
+    "icon": "UI_EquipIcon_Bow_ShatteredMirror",
+    "awakenIcon": "UI_EquipIcon_Bow_ShatteredMirror_Awaken",
+    "splashIcon": "UI_Gacha_EquipIcon_Bow_ShatteredMirror",
+    "baseAtk": 509.6,
+    "subStat": {
+      "propType": "FIGHT_PROP_CRITICAL",
+      "label": "CRIT Rate",
+      "value": 0.2756,
+      "isPercent": true
+    },
+    "refinements": [
+      {
+        "rank": 1,
+        "description": "For every party member other than the equipping character: · Who is of the same Elemental Type as the equipper: The equipping character's Elemental Mastery is increased by 64; · Who is not of the same Elemental Type as the equipper: The equipping character's ATK increases by 12%. The two effects described above can stack up to 3 times in total, with Elemental Mastery buffs applied first."
+      },
+      {
+        "rank": 2,
+        "description": "For every party member other than the equipping character: · Who is of the same Elemental Type as the equipper: The equipping character's Elemental Mastery is increased by 80; · Who is not of the same Elemental Type as the equipper: The equipping character's ATK increases by 15%. The two effects described above can stack up to 3 times in total, with Elemental Mastery buffs applied first."
+      },
+      {
+        "rank": 3,
+        "description": "For every party member other than the equipping character: · Who is of the same Elemental Type as the equipper: The equipping character's Elemental Mastery is increased by 96; · Who is not of the same Elemental Type as the equipper: The equipping character's ATK increases by 18%. The two effects described above can stack up to 3 times in total, with Elemental Mastery buffs applied first."
+      },
+      {
+        "rank": 4,
+        "description": "For every party member other than the equipping character: · Who is of the same Elemental Type as the equipper: The equipping character's Elemental Mastery is increased by 112; · Who is not of the same Elemental Type as the equipper: The equipping character's ATK increases by 21%. The two effects described above can stack up to 3 times in total, with Elemental Mastery buffs applied first."
+      },
+      {
+        "rank": 5,
+        "description": "For every party member other than the equipping character: · Who is of the same Elemental Type as the equipper: The equipping character's Elemental Mastery is increased by 128; · Who is not of the same Elemental Type as the equipper: The equipping character's ATK increases by 24%. The two effects described above can stack up to 3 times in total, with Elemental Mastery buffs applied first."
+      }
+    ]
+  },
+  {
+    "id": 15436,
+    "name": "Covenant of Frost and Snow",
+    "stars": 4,
+    "weaponType": "WEAPON_BOW",
+    "icon": "UI_EquipIcon_Bow_GlintstoneBow",
+    "awakenIcon": "UI_EquipIcon_Bow_GlintstoneBow_Awaken",
+    "splashIcon": "UI_Gacha_EquipIcon_Bow_GlintstoneBow",
+    "baseAtk": 509.6,
+    "subStat": {
+      "propType": "FIGHT_PROP_DEFENSE_PERCENT",
+      "label": "DEF",
+      "value": 0.5173,
+      "isPercent": true
+    },
+    "refinements": [
+      {
+        "rank": 1,
+        "description": "For 12s after the equipping character uses an Elemental Skill, their Elemental Mastery is increased by 120."
+      },
+      {
+        "rank": 2,
+        "description": "For 12s after the equipping character uses an Elemental Skill, their Elemental Mastery is increased by 150."
+      },
+      {
+        "rank": 3,
+        "description": "For 12s after the equipping character uses an Elemental Skill, their Elemental Mastery is increased by 180."
+      },
+      {
+        "rank": 4,
+        "description": "For 12s after the equipping character uses an Elemental Skill, their Elemental Mastery is increased by 210."
+      },
+      {
+        "rank": 5,
+        "description": "For 12s after the equipping character uses an Elemental Skill, their Elemental Mastery is increased by 240."
+      }
+    ]
+  },
+  {
     "id": 15501,
     "name": "Skyward Harp",
     "stars": 5,
@@ -8449,23 +8905,23 @@
     "refinements": [
       {
         "rank": 1,
-        "description": "For 12s after triggering a Swirl reaction, ATK increases by 24%. In addition, when 1/2 or more characters in the party are of a different Elemental Type from the equipping character, the DMG dealt by the equipping character's Charged Attacks is increased by 20%/48% and Elemental Burst DMG dealt is increased by 10%/24%."
+        "description": "For 12s after triggering a Swirl or Stellar Swirl reaction, ATK increases by 24%. In addition, when 1/2 or more characters in the party are of a different Elemental Type from the equipping character, the DMG dealt by the equipping character's Charged Attacks is increased by 20%/48%, and Elemental Burst DMG dealt is increased by 10%/24%."
       },
       {
         "rank": 2,
-        "description": "For 12s after triggering a Swirl reaction, ATK increases by 30%. In addition, when 1/2 or more characters in the party are of a different Elemental Type from the equipping character, the DMG dealt by the equipping character's Charged Attacks is increased by 25%/60% and Elemental Burst DMG dealt is increased by 12.5%/30%."
+        "description": "For 12s after triggering a Swirl or Stellar Swirl reaction, ATK increases by 30%. In addition, when 1/2 or more characters in the party are of a different Elemental Type from the equipping character, the DMG dealt by the equipping character's Charged Attacks is increased by 25%/60%, and Elemental Burst DMG dealt is increased by 12.5%/30%."
       },
       {
         "rank": 3,
-        "description": "For 12s after triggering a Swirl reaction, ATK increases by 36%. In addition, when 1/2 or more characters in the party are of a different Elemental Type from the equipping character, the DMG dealt by the equipping character's Charged Attacks is increased by 30%/72% and Elemental Burst DMG dealt is increased by 15%/36%."
+        "description": "For 12s after triggering a Swirl or Stellar Swirl reaction, ATK increases by 36%. In addition, when 1/2 or more characters in the party are of a different Elemental Type from the equipping character, the DMG dealt by the equipping character's Charged Attacks is increased by 30%/72%, and Elemental Burst DMG dealt is increased by 15%/36%."
       },
       {
         "rank": 4,
-        "description": "For 12s after triggering a Swirl reaction, ATK increases by 42%. In addition, when 1/2 or more characters in the party are of a different Elemental Type from the equipping character, the DMG dealt by the equipping character's Charged Attacks is increased by 35%/84% and Elemental Burst DMG dealt is increased by 17.5%/42%."
+        "description": "For 12s after triggering a Swirl or Stellar Swirl reaction, ATK increases by 42%. In addition, when 1/2 or more characters in the party are of a different Elemental Type from the equipping character, the DMG dealt by the equipping character's Charged Attacks is increased by 35%/84%, and Elemental Burst DMG dealt is increased by 17.5%/42%."
       },
       {
         "rank": 5,
-        "description": "For 12s after triggering a Swirl reaction, ATK increases by 48%. In addition, when 1/2 or more characters in the party are of a different Elemental Type from the equipping character, the DMG dealt by the equipping character's Charged Attacks is increased by 40%/96% and Elemental Burst DMG dealt is increased by 20%/48%."
+        "description": "For 12s after triggering a Swirl or Stellar Swirl reaction, ATK increases by 48%. In addition, when 1/2 or more characters in the party are of a different Elemental Type from the equipping character, the DMG dealt by the equipping character's Charged Attacks is increased by 40%/96%, and Elemental Burst DMG dealt is increased by 20%/48%."
       }
     ]
   },

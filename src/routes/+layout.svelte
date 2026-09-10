@@ -27,11 +27,13 @@
   import NavBar from "$lib/ui/NavBar.svelte";
   import PatchNotesPopup from "$lib/ui/components/PatchNotesPopup.svelte";
   import PlannerItinerarySheet from "$lib/ui/components/PlannerItinerarySheet.svelte";
+  import ResearchChatSheet from "$lib/ui/components/ResearchChatSheet.svelte";
   import AccountSettingsModal from "$lib/ui/components/AccountSettingsModal.svelte";
   import RosterSyncConflictPopup from "$lib/ui/components/RosterSyncConflictPopup.svelte";
   import { resolve } from "$app/paths";
   import { DISCORD_INVITE_URL } from "$lib/site";
   import { getSiteBackgroundUrl } from "$lib/utils";
+  import { dev } from "$app/environment";
   import "../app.css";
 
   const patchNotesPath = resolve("/patch-notes");
@@ -124,6 +126,9 @@
   {/if}
   <NavBar />
   <PlannerItinerarySheet />
+  {#if dev}
+    <ResearchChatSheet />
+  {/if}
   <AccountSettingsModal />
   <RosterSyncConflictPopup />
   <PatchNotesPopup note={data.latestPatchNote} />

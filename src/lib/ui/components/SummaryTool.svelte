@@ -38,6 +38,7 @@
   import { isOwnedNameId, ownedNameIds } from "$lib/utils";
   import { abyssPath, settingsPath, stygianPath } from "$lib/ui/nav-links";
   import { authClient } from "$lib/auth-client";
+  import { needsRosterSetup } from "$lib/roster-setup";
   import type { Tables } from "$lib/types/database.types";
 
   const ABYSS_SLOTS = ["top", "bottom"] as const;
@@ -128,7 +129,11 @@
   const session = authClient.useSession();
   /** Same gate as the home-page “configure roster first” card. */
   let showRosterSetup = $derived(
-    !$session.isPending && !$hasSavedRoster && !$session.data,
+    needsRosterSetup({
+      sessionPending: $session.isPending,
+      hasSavedRoster: $hasSavedRoster,
+      sessionData: $session.data,
+    }),
   );
 
   let trailItems = $derived(
@@ -168,14 +173,12 @@
     return next;
   }
 
-  function filterGroups(groups: DisplayGroup[]): DisplayGroup[] {
-    let next = rosterFilter === "owned" ? toOwnedGroups(groups) : groups;
-    if (dpsTags.length === 0) return next;
-    return next.filter((g) => dpsTags.includes(g.mainDps));
+  function filterGroups(pool: DisplayGroup[]): DisplayGroup[] {
+    if (dpsTags.length === 0) return pool;
+    return pool.filter((g) => dpsTags.includes(g.mainDps));
   }
 
-  /** Pool after owned filter, before tag search — used for count + autocomplete. */
-  function poolGroups(groups: DisplayGroup[]): DisplayGroup[] {
+  function columnPool(groups: DisplayGroup[]): DisplayGroup[] {
     return rosterFilter === "owned" ? toOwnedGroups(groups) : groups;
   }
 
@@ -220,26 +223,37 @@
     });
   });
 
-  let abyssColumns = $derived(
-    abyssColumnsRaw.map((col) => ({
-      ...col,
-      groups: filterGroups(col.groups),
-    })),
+  let abyssColumnsPrepared = $derived(
+    abyssColumnsRaw.map((col) => {
+      const pool = columnPool(col.groups);
+      return {
+        ...col,
+        pool,
+        groups: filterGroups(pool),
+      };
+    }),
   );
 
-  let stygianColumns = $derived(
-    stygianColumnsRaw.map((col) => ({
-      ...col,
-      groups: filterGroups(col.groups),
-    })),
+  let stygianColumnsPrepared = $derived(
+    stygianColumnsRaw.map((col) => {
+      const pool = columnPool(col.groups);
+      return {
+        ...col,
+        pool,
+        groups: filterGroups(pool),
+      };
+    }),
   );
+
+  let abyssColumns = $derived(abyssColumnsPrepared);
+  let stygianColumns = $derived(stygianColumnsPrepared);
 
   /** Autocomplete pool: On-Field DPS on this mode's board (respects owned filter). */
   let dpsOptions = $derived.by(() => {
-    const cols = mode === "abyss" ? abyssColumnsRaw : stygianColumnsRaw;
+    const cols = mode === "abyss" ? abyssColumnsPrepared : stygianColumnsPrepared;
     const ids = new Set<string>();
     for (const col of cols) {
-      for (const g of poolGroups(col.groups)) ids.add(g.mainDps);
+      for (const g of col.pool) ids.add(g.mainDps);
     }
     return [...ids].sort((a, b) =>
       dpsDisplayName(a).localeCompare(dpsDisplayName(b)),
@@ -247,9 +261,8 @@
   });
 
   let activeRawGroupCount = $derived.by(() => {
-    const cols = mode === "abyss" ? abyssColumnsRaw : stygianColumnsRaw;
-    const raw = cols.find((c) => c.slot === activeSlot)?.groups ?? [];
-    return poolGroups(raw).length;
+    const cols = mode === "abyss" ? abyssColumnsPrepared : stygianColumnsPrepared;
+    return cols.find((c) => c.slot === activeSlot)?.pool.length ?? 0;
   });
 
   let sideOptions = $derived.by(() => {

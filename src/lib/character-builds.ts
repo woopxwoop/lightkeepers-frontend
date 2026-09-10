@@ -728,7 +728,7 @@ export function exampleRelevantGoodKeys(
     const k = example.main_stats?.[slot.key];
     if (typeof k === "string" && k) keys.add(k);
   }
-  if (Array.isArray(example.goal_substats)) {
+  if (Array.isArray(example.goal_substats) && example.goal_substats.length > 0) {
     for (const k of example.goal_substats) {
       if (typeof k === "string" && k) keys.add(k);
     }

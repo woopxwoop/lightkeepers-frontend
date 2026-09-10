@@ -3,15 +3,19 @@
   import { page } from "$app/state";
   import {
     abyssPath,
-    isPathActive,
+    isMainLinkActive,
+    isSettingsPage,
+    isToolLinkActive,
+    isToolsPage,
     mainLinks,
     settingsLinks,
     settingsPath,
+    settingsTabFromSearch,
     toolsLinks,
-    toolsPrefixPath,
     type MainLink,
     type ToolsLink,
   } from "$lib/ui/nav-links";
+  import { shouldArmSubmenuFirstActivation } from "$lib/ui/nav-submenu-arm";
 
   let {
     onSubOpenChange,
@@ -19,6 +23,7 @@
     onSubOpenChange?: (open: boolean) => void;
   } = $props();
 
+  let navWrapEl: HTMLElement | undefined = $state();
   let toolsHovered = $state(false);
   let settingsHovered = $state(false);
   let toolsLeaveTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -31,6 +36,31 @@
   onDestroy(() => {
     if (toolsLeaveTimeout) clearTimeout(toolsLeaveTimeout);
     if (settingsLeaveTimeout) clearTimeout(settingsLeaveTimeout);
+  });
+
+  let toolsTouchArmed = $state(false);
+  let settingsTouchArmed = $state(false);
+  /** Last pointerdown type on Tools/Settings — click alone has no pointerType. */
+  let lastPointerType: string | null = null;
+
+  function dismissArmedSubmenus() {
+    toolsHovered = false;
+    settingsHovered = false;
+    toolsTouchArmed = false;
+    settingsTouchArmed = false;
+  }
+
+  $effect(() => {
+    if (!toolsTouchArmed && !settingsTouchArmed) return;
+    function onPointerDownOutside(event: PointerEvent) {
+      const target = event.target as Node | null;
+      if (!target || navWrapEl?.contains(target)) return;
+      dismissArmedSubmenus();
+    }
+    window.addEventListener("pointerdown", onPointerDownOutside, true);
+    return () => {
+      window.removeEventListener("pointerdown", onPointerDownOutside, true);
+    };
   });
 
   function onToolsEnter() {
@@ -49,6 +79,7 @@
   function onToolsLeave() {
     toolsLeaveTimeout = setTimeout(() => {
       toolsHovered = false;
+      toolsTouchArmed = false;
     }, 120);
   }
 
@@ -68,27 +99,68 @@
   function onSettingsLeave() {
     settingsLeaveTimeout = setTimeout(() => {
       settingsHovered = false;
+      settingsTouchArmed = false;
     }, 120);
   }
 
+  function onMenuPointerDown(event: PointerEvent) {
+    lastPointerType = event.pointerType;
+  }
+
+  function onToolsClick(event: MouseEvent) {
+    const pointerType = lastPointerType;
+    lastPointerType = null;
+    if (
+      !shouldArmSubmenuFirstActivation({
+        pointerType,
+        clickDetail: event.detail,
+        alreadyArmed: toolsTouchArmed,
+      })
+    ) {
+      return;
+    }
+    // First touch opens (even if a compatibility mouseenter already hovered).
+    event.preventDefault();
+    onToolsEnter();
+    toolsTouchArmed = true;
+    settingsTouchArmed = false;
+  }
+
+  function onSettingsClick(event: MouseEvent) {
+    const pointerType = lastPointerType;
+    lastPointerType = null;
+    if (
+      !shouldArmSubmenuFirstActivation({
+        pointerType,
+        clickDetail: event.detail,
+        alreadyArmed: settingsTouchArmed,
+      })
+    ) {
+      return;
+    }
+    event.preventDefault();
+    onSettingsEnter();
+    settingsTouchArmed = true;
+    toolsTouchArmed = false;
+  }
+
   function isMainActive(link: MainLink): boolean {
-    return isPathActive(page.url.pathname, link.path, link.match);
+    return isMainLinkActive(page.url.pathname, link);
   }
 
   function isToolActive(link: ToolsLink): boolean {
-    return isPathActive(page.url.pathname, link.path, link.match);
+    return isToolLinkActive(page.url.pathname, link);
   }
 
-  const onToolsPage = $derived(
-    isPathActive(page.url.pathname, toolsPrefixPath, "prefix"),
-  );
+  const onToolsPage = $derived(isToolsPage(page.url.pathname));
 
-  const onSettingsPage = $derived(
-    isPathActive(page.url.pathname, settingsPath, "prefix"),
-  );
+  const onSettingsPage = $derived(isSettingsPage(page.url.pathname));
 </script>
 
-<div class="hidden md:flex items-center gap-6 relative">
+<div
+  class="hidden md:flex items-center gap-6 relative"
+  bind:this={navWrapEl}
+>
   <div class="nav-menu-item">
     <a
       href={abyssPath}
@@ -98,7 +170,9 @@
       onmouseenter={onToolsEnter}
       onmouseleave={onToolsLeave}
       onfocus={onToolsEnter}
-      onblur={onToolsLeave}>Tools</a
+      onblur={onToolsLeave}
+      onpointerdown={onMenuPointerDown}
+      onclick={onToolsClick}>Tools</a
     >
 
     <div
@@ -128,7 +202,6 @@
     <a
       href={link.path}
       class="nav-link"
-      data-sveltekit-preload-data={"preload" in link ? link.preload : undefined}
       aria-current={isMainActive(link) ? "page" : undefined}>{link.label}</a
     >
   {/each}
@@ -142,7 +215,9 @@
       onmouseenter={onSettingsEnter}
       onmouseleave={onSettingsLeave}
       onfocus={onSettingsEnter}
-      onblur={onSettingsLeave}>Settings</a
+      onblur={onSettingsLeave}
+      onpointerdown={onMenuPointerDown}
+      onclick={onSettingsClick}>Settings</a
     >
 
     <div
@@ -156,7 +231,7 @@
       onfocusout={onSettingsLeave}
     >
       {#each settingsLinks as link}
-        {@const activeTab = page.url.searchParams.get("tab") ?? "roster"}
+        {@const activeTab = settingsTabFromSearch(page.url.searchParams)}
         <a
           href={link.path}
           class="nav-sub-link"

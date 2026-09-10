@@ -22,10 +22,8 @@ import {
   loopBoundaryLeftPx,
   loopBoundaryLeftPxs,
   rotationAxisBands,
-  findSwapCyclePeriod,
   findBestSwapCycle,
   detectRotationWindow,
-  detectRotationWindowS,
   DEFAULT_ROTATION_WINDOW_S,
   type CollapsedRotationEvent,
 } from "$lib/rotation-timeline";
@@ -457,7 +455,7 @@ describe("findBestSwapCycle", () => {
 
   it("still finds a cycle that starts at index 0", () => {
     assert.equal(
-      findSwapCyclePeriod([
+      findBestSwapCycle([
         "fischl",
         "sucrose",
         "flins",
@@ -466,7 +464,7 @@ describe("findBestSwapCycle", () => {
         "sucrose",
         "flins",
         "aino",
-      ]),
+      ])?.period ?? null,
       4,
     );
   });
@@ -538,7 +536,7 @@ describe("detectRotationWindow", () => {
       loopEndsS: [],
       period: null,
     });
-    assert.equal(detectRotationWindowS(events), DEFAULT_ROTATION_WINDOW_S);
+    assert.equal(detectRotationWindow(events).endS, DEFAULT_ROTATION_WINDOW_S);
   });
 
   it("splits an on-field opener as setup when the loop starts at the first swap", () => {

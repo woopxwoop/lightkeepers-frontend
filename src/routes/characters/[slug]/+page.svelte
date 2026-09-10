@@ -1,11 +1,14 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import { resolve } from "$app/paths";
+  import { dev } from "$app/environment";
   import { animationsEnabled, charactersOwned } from "$lib/stores";
   import CharacterIcon from "$lib/ui/components/CharacterIcon.svelte";
   import PageShell from "$lib/ui/components/PageShell.svelte";
   import PageTrail from "$lib/ui/components/PageTrail.svelte";
   import ActionMenu from "$lib/ui/components/ActionMenu.svelte";
+  import Button from "$lib/ui/components/Button.svelte";
+  import BuildResearchSheet from "$lib/ui/components/BuildResearchSheet.svelte";
   import CharacterKitPanel from "$lib/ui/components/character/CharacterKitPanel.svelte";
   import CharacterTeamsPanel from "$lib/ui/components/character/CharacterTeamsPanel.svelte";
   import CharacterAnalyticsPanel from "$lib/ui/components/character/CharacterAnalyticsPanel.svelte";
@@ -30,6 +33,7 @@
   let kit = $derived(data.kit as CharacterKit);
   let kitChannel = $derived((data.kitChannel ?? "live") as "live" | "beta");
   let rawBuilds = $derived((data.builds ?? null) as CharacterIndex | null);
+  let buildsUnavailable = $derived(Boolean(data.buildsUnavailable));
   let summaryStale = $derived(
     isStaleBuildSummary(kit.name_id) || rawBuilds?.upToDate === false,
   );
@@ -50,6 +54,8 @@
 
   let activeTab = $state<PageTab>("builds");
   let mobileNavOpen = $state(false);
+  let skillsElement = $state("");
+  let buildResearchOpen = $state(false);
   let activeTabLabel = $derived(
     TAB_OPTIONS.find((option) => option.value === activeTab)?.label ?? "Builds",
   );
@@ -138,7 +144,15 @@
     } catch {
       // Keep the raw hash when it is not valid URI encoding.
     }
-    if (hash.startsWith("#kit-")) selectTab("skills");
+    if (!hash.startsWith("#kit-")) return;
+    selectTab("skills");
+    const id = hash.slice(1);
+    void tick().then(() => {
+      document.getElementById(id)?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    });
   });
 </script>
 
@@ -182,6 +196,15 @@
         </div>
       </div>
       <div class="hero-menu">
+        {#if dev}
+          <Button
+            variant="secondary"
+            class="hero-build-btn"
+            onclick={() => (buildResearchOpen = true)}
+          >
+            Build
+          </Button>
+        {/if}
         <ActionMenu label="Character actions" items={heroMenuItems} />
       </div>
     </section>
@@ -233,6 +256,7 @@
           <CharacterKitPanel
             {kit}
             {travelerKits}
+            bind:skillsElement
             onNeedSkillsTab={() => selectTab("skills")}
           />
         {:else if activeTab === "teams"}
@@ -257,6 +281,7 @@
             {kit}
             {builds}
             {summaryStale}
+            {buildsUnavailable}
             {elColor}
             {goodKey}
             {goodKeyMap}
@@ -267,6 +292,14 @@
     </div>
   </div>
 </PageShell>
+
+{#if dev}
+  <BuildResearchSheet
+    bind:open={buildResearchOpen}
+    focusNameId={kit.name_id}
+    characterName={kit.name}
+  />
+{/if}
 
 <style>
   .char-page {
@@ -311,6 +344,15 @@
     top: 0.65rem;
     right: 0.65rem;
     z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .hero-menu :global(.hero-build-btn) {
+    border-color: var(--accent-1);
+    background: color-mix(in srgb, var(--background-color) 72%, transparent);
+    color: var(--foreground-color);
   }
 
   .hero-portrait {

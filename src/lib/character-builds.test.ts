@@ -33,8 +33,7 @@ import type {
 } from "./types/investment.ts";
 
 function builds(
-  partial: Partial<CharacterIndex> &
-    Pick<CharacterIndex, "main_stats" | "substat_rolls_liquid">,
+  partial: Partial<CharacterIndex> & Pick<CharacterIndex, "main_stats">,
 ): CharacterIndex {
   return {
     key: "Test",
@@ -220,8 +219,6 @@ describe("recommendedSubstatsFromBuilds", () => {
           goblet: [{ key: "hydro_dmg_", teams: 1 }],
           circlet: [{ key: "critRate_", teams: 1 }],
         },
-        substat_rolls_liquid:
-          undefined as unknown as CharacterIndex["substat_rolls_liquid"],
         stat_recommendations: {
           mode: "checklist",
           delta_stats: [
@@ -1043,6 +1040,27 @@ describe("exampleRelevantGoodKeys display rules", () => {
       },
       high_substat_rolls: { critDMG_: 12, critRate_: 10 },
       high_substat_rolls_liquid: { critDMG_: 11, critRate_: 9 },
+    };
+    const keys = exampleRelevantGoodKeys(example, "high");
+    assert.equal(keys.has("atk_"), true);
+    assert.equal(keys.has("electro_dmg_"), true);
+    assert.equal(keys.has("critRate_"), true);
+    assert.equal(keys.has("critDMG_"), true);
+  });
+
+  it("high invest with empty goal_substats falls back to high liquids", () => {
+    const example: CharacterBuildExample = {
+      ...base,
+      key: "RaidenShogun",
+      invest: "high",
+      main_stats: {
+        sands: "atk_",
+        goblet: "electro_dmg_",
+        circlet: "critRate_",
+      },
+      high_substat_rolls: { critDMG_: 12, critRate_: 10 },
+      high_substat_rolls_liquid: { critDMG_: 11, critRate_: 9 },
+      goal_substats: [],
     };
     const keys = exampleRelevantGoodKeys(example, "high");
     assert.equal(keys.has("atk_"), true);

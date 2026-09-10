@@ -86,4 +86,22 @@ describe("patch notes", () => {
     assert.match(html, /<a href="https:\/\/lightkeepers\.moe\/patch-notes"/);
     assert.match(html, /<ul>/);
   });
+
+  it("renderPatchNoteBody supports ordered lists", () => {
+    const html = renderPatchNoteBody(
+      "Do this:\n1. First step\n2. Second step\n\nDone.",
+    );
+    assert.match(html, /<ol>/);
+    assert.doesNotMatch(html, /<ol start=/);
+    assert.match(html, /<li>First step<\/li>/);
+    assert.match(html, /<li>Second step<\/li>/);
+    assert.match(html, /<p>Done\.<\/p>/);
+  });
+
+  it("renderPatchNoteBody emits ol start when the first marker is not 1", () => {
+    const html = renderPatchNoteBody("3. Third\n4. Fourth");
+    assert.match(html, /<ol start="3">/);
+    assert.match(html, /<li>Third<\/li>/);
+    assert.match(html, /<li>Fourth<\/li>/);
+  });
 });

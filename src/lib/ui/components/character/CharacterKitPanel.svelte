@@ -16,10 +16,12 @@
     kit,
     travelerKits,
     onNeedSkillsTab,
+    skillsElement = $bindable(""),
   }: {
     kit: CharacterKit;
     travelerKits: Record<string, CharacterKit>;
     onNeedSkillsTab: () => void;
+    skillsElement?: string;
   } = $props();
 
   const SKILL_LABELS: Record<string, string> = {
@@ -34,7 +36,6 @@
     group: "Talents" | "Passives" | "Constellations";
   };
 
-  let skillsElement = $state("");
   /** Kit card currently flashing after an in-page talent link click. */
   let flashId = $state<string | null>(null);
   let flashTimer: ReturnType<typeof setTimeout> | null = null;

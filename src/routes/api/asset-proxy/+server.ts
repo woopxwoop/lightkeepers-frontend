@@ -49,7 +49,8 @@ export const GET: RequestHandler = async ({ url }) => {
   }
 
   const contentType = upstream.headers.get("content-type") ?? "";
-  if (!contentType.toLowerCase().startsWith("image/")) {
+  const type = contentType.toLowerCase();
+  if (!type.startsWith("image/") || type.startsWith("image/svg+xml")) {
     cancelUpstreamBody(upstream);
     error(502, "Upstream is not an image");
   }

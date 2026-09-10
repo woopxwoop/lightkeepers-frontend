@@ -8,10 +8,16 @@
   import UsageSeriesChart from "$lib/ui/components/UsageSeriesChart.svelte";
   import TeamHandList from "$lib/ui/components/character/TeamHandList.svelte";
   import {
+    analyticsCacheKey,
     fetchCharacterAnalytics,
+    getCharacterAnalyticsCached,
     isAbortError,
     isTimeoutError,
   } from "$lib/app/character-analytics";
+  import {
+    dimmedKeysFromMembers,
+    handCharactersFromMembers,
+  } from "$lib/character-teams";
   import type {
     Character,
     CharacterAnalyticsMode,
@@ -35,21 +41,29 @@
     { value: "abyss" as const, label: "Abyss" },
   ];
 
-  let analyticsMode = $state<CharacterAnalyticsMode>("stygian");
-  let analyticsPayload = $state<CharacterAnalyticsPayload | null>(null);
+  const INITIAL_ANALYTICS_MODE: CharacterAnalyticsMode = "stygian";
+  let analyticsMode = $state<CharacterAnalyticsMode>(INITIAL_ANALYTICS_MODE);
+  const seedKey = analyticsCacheKey(INITIAL_ANALYTICS_MODE, nameId);
+  const seedPayload = getCharacterAnalyticsCached(seedKey);
+  let analyticsPayload = $state<CharacterAnalyticsPayload | null>(seedPayload);
   let analyticsError = $state<string | null>(null);
   let analyticsLoading = $state(false);
-  let analyticsKey = $state<string | null>(null);
+  let analyticsKey = $state<string | null>(seedPayload ? seedKey : null);
   let analyticsAbort: AbortController | null = null;
 
   $effect(() => {
     const id = nameId;
     const mode = analyticsMode;
-    const key = `${mode}:${id}`;
-    const cached = untrack(
-      () => analyticsKey === key && analyticsPayload !== null,
-    );
-    if (cached) return;
+    const key = analyticsCacheKey(mode, id);
+    const fromModule = getCharacterAnalyticsCached(key);
+    if (fromModule) {
+      // Instant paint from last success; still refetch below.
+      untrack(() => {
+        analyticsPayload = fromModule;
+        analyticsKey = key;
+        analyticsError = null;
+      });
+    }
 
     void loadAnalytics(id, mode, key);
     return () => {
@@ -68,7 +82,9 @@
 
     analyticsLoading = true;
     analyticsError = null;
-    analyticsPayload = null;
+    if (untrack(() => analyticsKey) !== key) {
+      analyticsPayload = null;
+    }
 
     return fetchCharacterAnalytics(id, mode, controller.signal)
       .then((payload) => {
@@ -87,14 +103,16 @@
           analyticsLoading = false;
           return;
         }
-        analyticsPayload = null;
-        analyticsKey = null;
         analyticsLoading = false;
         analyticsError = isTimeoutError(err)
           ? "Request timed out"
           : err instanceof Error
             ? err.message
             : "Failed to load analytics";
+        // Same-key refresh failed: keep the cached view; only drop state on key change.
+        if (untrack(() => analyticsKey) === key) return;
+        analyticsPayload = null;
+        analyticsKey = null;
       });
   }
 
@@ -126,16 +144,8 @@
   });
 
   async function retryAnalytics() {
-    const key = `${analyticsMode}:${nameId}`;
+    const key = analyticsCacheKey(analyticsMode, nameId);
     await loadAnalytics(nameId, analyticsMode, key);
-  }
-
-  function handCharactersFromMembers(members: string[]) {
-    return members.map((id) => mapping.get(id));
-  }
-
-  function dimmedKeysFromMembers(members: string[]): Set<string> {
-    return new Set(members.filter((id) => !ownedNameIdsSet.has(id)));
   }
 </script>
 
@@ -166,13 +176,24 @@
           >
         {/snippet}
       </EmptyState>
-    {:else if analyticsPayload && analyticsKey === `${analyticsMode}:${nameId}`}
-      {#if analyticsPayload.usage.length === 0}
-        <EmptyState message="No usage history for {characterName} yet." />
-      {:else}
-        <div class="analytics-chart">
-          <UsageSeriesChart points={analyticsPayload.usage} />
-        </div>
+    {:else if analyticsPayload && analyticsKey === analyticsCacheKey(analyticsMode, nameId)}
+      <div class="analytics-payload" class:is-refreshing={analyticsLoading}>
+        {#if analyticsLoading}
+          <p class="analytics-refresh meta-sub" aria-live="polite">
+            Refreshing…
+          </p>
+        {:else if analyticsError}
+          <p class="analytics-refresh meta-sub" role="status">
+            {analyticsError}
+          </p>
+        {/if}
+        {#if analyticsPayload.usage.length === 0}
+          <EmptyState message="No usage history for {characterName} yet." />
+        {:else}
+          <div class="analytics-chart">
+            <UsageSeriesChart points={analyticsPayload.usage} />
+          </div>
+        {/if}
         {#if analyticsTeamsByVersion.length > 0}
           <div class="analytics-teams">
             <h2 class="section-title">Top teams by version</h2>
@@ -185,8 +206,12 @@
                       <TeamCardHand
                         characters={handCharactersFromMembers(
                           team.members ?? [],
+                          mapping,
                         )}
-                        dimmedKeys={dimmedKeysFromMembers(team.members ?? [])}
+                        dimmedKeys={dimmedKeysFromMembers(
+                          team.members ?? [],
+                          ownedNameIdsSet,
+                        )}
                         spread="flat"
                       />
                       <div class="team-hand-footer">
@@ -203,7 +228,7 @@
             {/each}
           </div>
         {/if}
-      {/if}
+      </div>
     {:else}
       <LoadingState variant="pulse" message="Loading usage history…" />
     {/if}
@@ -240,6 +265,18 @@
     letter-spacing: var(--tracking-title);
     text-transform: uppercase;
     color: var(--foreground-color);
+  }
+
+  .analytics-payload {
+    position: relative;
+  }
+
+  .analytics-payload.is-refreshing {
+    opacity: 0.72;
+  }
+
+  .analytics-refresh {
+    margin: 0 0 var(--space-2);
   }
 
   .analytics-chart {

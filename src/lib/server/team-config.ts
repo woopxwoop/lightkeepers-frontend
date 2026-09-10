@@ -18,8 +18,10 @@ import type {
 const gunzipAsync = promisify(gunzip);
 /** Max compressed rotation payload from CDN (512 KiB). */
 const MAX_ROTATION_GZIP_BYTES = 512 * 1024;
-/** Max decompressed rotation JSON (4 MiB). */
-const MAX_ROTATION_JSON_BYTES = 4 * 1024 * 1024;
+/** Max decompressed rotation JSON (512 KiB). */
+const MAX_ROTATION_JSON_BYTES = 512 * 1024;
+/** Reject samples with more events than a real rotation needs. */
+const MAX_ROTATION_EVENTS = 4096;
 const CDN_INVESTMENT = "https://api.lightkeepers.moe/sim/investment.json.gz";
 const investmentCache = new LRUCache<InvestmentFile>(1, 15 * 60 * 1000, {
   redisNamespace: "investment",
@@ -27,7 +29,7 @@ const investmentCache = new LRUCache<InvestmentFile>(1, 15 * 60 * 1000, {
 const configCache = new LRUCache<string | null>(200, 15 * 60 * 1000, {
   redisNamespace: "team-config",
 });
-const rotationCache = new LRUCache<RotationSample | null>(200, 15 * 60 * 1000, {
+const rotationCache = new LRUCache<RotationSample | null>(32, 15 * 60 * 1000, {
   redisNamespace: "team-rotation",
 });
 
@@ -57,7 +59,12 @@ function isGzipped(buf: Buffer): boolean {
 export async function readBoundedResponseBody(
   res: Response,
   maxBytes: number,
+  signal?: AbortSignal,
 ): Promise<Buffer | null> {
+  if (signal?.aborted) {
+    throw new DOMException("The operation was aborted.", "AbortError");
+  }
+
   const lenHeader = res.headers.get("content-length");
   if (lenHeader) {
     const len = Number.parseInt(lenHeader, 10);
@@ -77,11 +84,24 @@ export async function readBoundedResponseBody(
   }
 
   const reader = res.body.getReader();
+  const onAbort = () => {
+    void reader.cancel().catch(() => {});
+  };
+  signal?.addEventListener("abort", onAbort, { once: true });
+
   const parts: Buffer[] = [];
   let total = 0;
   try {
     for (;;) {
+      if (signal?.aborted) {
+        throw new DOMException("The operation was aborted.", "AbortError");
+      }
       const { done, value } = await reader.read();
+      // Cancel often resolves the pending read with done:true — don't treat
+      // that as a successful end-of-stream after abort.
+      if (signal?.aborted) {
+        throw new DOMException("The operation was aborted.", "AbortError");
+      }
       if (done) break;
       if (!value?.byteLength) continue;
       total += value.byteLength;
@@ -92,13 +112,15 @@ export async function readBoundedResponseBody(
       parts.push(Buffer.from(value));
     }
     return parts.length === 0 ? Buffer.alloc(0) : Buffer.concat(parts);
-  } catch {
+  } catch (err) {
     try {
       await reader.cancel();
     } catch {
       /* ignore */
     }
-    return null;
+    throw err;
+  } finally {
+    signal?.removeEventListener("abort", onAbort);
   }
 }
 
@@ -207,7 +229,7 @@ function asRotationAction(value: unknown): RotationAction {
   return "other";
 }
 
-function parseRotationSample(raw: unknown): RotationSample | null {
+export function parseRotationSample(raw: unknown): RotationSample | null {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
   const o = raw as Record<string, unknown>;
   if (typeof o.seed !== "string") return null;
@@ -225,10 +247,15 @@ function parseRotationSample(raw: unknown): RotationSample | null {
     return null;
   }
   if (!Array.isArray(o.characters) || !Array.isArray(o.events)) return null;
+  if (o.characters.length === 0 || o.events.length > MAX_ROTATION_EVENTS) {
+    return null;
+  }
 
-  const characters = o.characters.filter(
-    (c): c is string => typeof c === "string" && c.length > 0,
-  );
+  const characters: string[] = [];
+  for (const c of o.characters) {
+    if (typeof c !== "string" || c.length === 0) return null;
+    characters.push(c);
+  }
   const events: RotationSampleEvent[] = [];
   for (const entry of o.events) {
     if (!entry || typeof entry !== "object") continue;
