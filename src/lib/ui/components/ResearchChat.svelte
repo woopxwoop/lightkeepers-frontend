@@ -147,17 +147,20 @@
 
   async function runAsk() {
     if (!canRun || !focusNameId) return;
+    const submittedFocus = focusNameId;
     loading = true;
     error = null;
     response = null;
     try {
-      const res = await postResearchBuild(focusNameId, {
+      const res = await postResearchBuild(submittedFocus, {
         llm_provider: llmProvider,
       });
+      if (focusNameId !== submittedFocus) return;
       response = res;
       await tick();
       resultEl?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     } catch (err) {
+      if (focusNameId !== submittedFocus) return;
       error = err instanceof Error ? err.message : "Request failed";
     } finally {
       loading = false;

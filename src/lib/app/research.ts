@@ -201,10 +201,22 @@ export function annotateOwnedRankRows<
   ownedKeys: ReadonlySet<string>,
 ): ResearchOwnedRankRow<T>[] {
   let bestOwnedKey: string | null = null;
+  let bestOwnedRank: number | null = null;
   for (const row of rows) {
     if (!ownedSetHas(ownedKeys, row.key)) continue;
-    bestOwnedKey = row.key;
-    break;
+    const rank = row.rank;
+    const hasRank = typeof rank === "number" && Number.isFinite(rank);
+    if (bestOwnedKey === null) {
+      bestOwnedKey = row.key;
+      bestOwnedRank = hasRank ? rank : null;
+      // Unranked lists: first owned wins.
+      if (!hasRank) break;
+      continue;
+    }
+    if (hasRank && bestOwnedRank !== null && rank < bestOwnedRank) {
+      bestOwnedKey = row.key;
+      bestOwnedRank = rank;
+    }
   }
   const bestFold = bestOwnedKey ? gearKeyFold(bestOwnedKey) : null;
   return rows.map((row) => {

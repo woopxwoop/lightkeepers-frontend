@@ -443,10 +443,10 @@
   {#if rows.length === 0}
     <p class="build-empty meta-sub">No ranked options from sources.</p>
   {:else}
-    <ol class="build-rank-list">
+    <ol class="build-rank-list" role="list">
       {#each rows as row (row.key)}
         <li class="build-rank-row" class:is-top={row.rank === 1}>
-          <span class="build-rank-num" aria-hidden="true">{row.rank}</span>
+          <span class="build-rank-num">{row.rank}</span>
           <div class="build-rank-body">
             <div class="build-rank-head">
               {#if kind === "weapon"}

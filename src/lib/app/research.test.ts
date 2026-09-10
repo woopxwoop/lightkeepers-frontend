@@ -277,6 +277,34 @@ describe("collectOwnedResearchGearKeys + annotateOwnedRankRows", () => {
     );
   });
 
+  it("bestOwned prefers lowest rank when owned rows are unsorted", () => {
+    const rows = annotateOwnedRankRows(
+      [
+        { rank: 3, key: "DragonsBane" },
+        { rank: 1, key: "StaffOfHoma" },
+        { rank: 2, key: "Deathmatch" },
+      ],
+      new Set(["DragonsBane", "Deathmatch"]),
+    );
+    assert.deepEqual(
+      rows.map((r) => ({ key: r.key, owned: r.owned, bestOwned: r.bestOwned })),
+      [
+        { key: "DragonsBane", owned: true, bestOwned: false },
+        { key: "StaffOfHoma", owned: false, bestOwned: false },
+        { key: "Deathmatch", owned: true, bestOwned: true },
+      ],
+    );
+  });
+
+  it("bestOwned keeps first owned when ranks are absent", () => {
+    const rows = annotateOwnedRankRows(
+      [{ key: "ShimenawasReminiscence" }, { key: "CrimsonWitchOfFlames" }],
+      new Set(["ShimenawasReminiscence", "CrimsonWitchOfFlames"]),
+    );
+    assert.equal(rows[0]?.bestOwned, true);
+    assert.equal(rows[1]?.bestOwned, false);
+  });
+
   it("joinBuildInventory annotates weapons and artifact sets separately", () => {
     const joined = joinBuildInventory({
       weapon_ranks: [

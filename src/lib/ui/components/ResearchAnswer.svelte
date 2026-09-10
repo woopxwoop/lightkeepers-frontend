@@ -40,7 +40,6 @@
   import BuildPanel from "$lib/ui/components/BuildPanel.svelte";
   import ResearchEntityMention from "$lib/ui/components/ResearchEntityMention.svelte";
   import TeamCardHand from "$lib/ui/components/TeamCardHand.svelte";
-  import { get } from "svelte/store";
   import { mount, tick, unmount } from "svelte";
 
   let {
@@ -88,6 +87,7 @@
       buildOwnedGear = ownedGear;
       return;
     }
+    const characters = $charactersOwned;
     let cancelled = false;
     void (async () => {
       let weapons = null;
@@ -106,7 +106,7 @@
       buildOwnedGear = collectOwnedResearchGearKeys({
         inventoryWeapons: weapons,
         inventoryArtifacts: artifacts,
-        characters: get(charactersOwned),
+        characters,
       });
     })();
     return () => {
