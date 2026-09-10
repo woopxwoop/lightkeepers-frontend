@@ -281,6 +281,7 @@ class Parser {
   parseIf(): ScriptPat {
     this.skipUntil("{");
     const branches: ScriptPat[] = [this.parseBlock()];
+    let hadPlainElse = false;
     while (this.eatId("else")) {
       if (this.eatId("if")) {
         this.skipUntil("{");
@@ -288,9 +289,10 @@ class Parser {
         continue;
       }
       branches.push(this.parseBlock());
+      hadPlainElse = true;
       break;
     }
-    if (branches.length === 1) branches.push({ kind: "seq", items: [] });
+    if (!hadPlainElse) branches.push({ kind: "seq", items: [] });
     return { kind: "alt", items: branches };
   }
 

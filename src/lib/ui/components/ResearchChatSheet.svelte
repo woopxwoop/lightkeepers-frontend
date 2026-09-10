@@ -176,7 +176,7 @@
     padding: 0 0.1rem 0.15rem;
   }
 
-  .sheet-body :global(.chat-plain) {
+  .sheet-body :global(.ask-plain) {
     flex: 1;
     min-height: 0;
   }

@@ -167,6 +167,14 @@
     }
   }
 
+  function onRetry() {
+    if (!providerReady) {
+      void refreshHealth();
+      return;
+    }
+    void runAsk();
+  }
+
   function onSubmit(event: SubmitEvent) {
     event.preventDefault();
     void runAsk();
@@ -286,7 +294,13 @@
         <div class="ask-state ask-error" role="alert">
           <p class="section-title">Couldn’t load research</p>
           <p class="section-lede">{error}</p>
-          <Button variant="secondary" onclick={() => void runAsk()}>Retry</Button>
+          <Button
+            variant="secondary"
+            disabled={loading || !focusNameId}
+            onclick={onRetry}
+          >
+            {providerReady ? "Retry" : "Check agent"}
+          </Button>
         </div>
       {:else if response && isBuildView}
         <div class="ask-result-meta">
@@ -328,7 +342,13 @@
           <p class="section-lede">
             Agent did not return a Build view. Retry Build.
           </p>
-          <Button variant="secondary" onclick={() => void runAsk()}>Retry</Button>
+          <Button
+            variant="secondary"
+            disabled={loading || !focusNameId}
+            onclick={onRetry}
+          >
+            {providerReady ? "Retry" : "Check agent"}
+          </Button>
         </div>
       {:else}
         <div class="ask-empty">

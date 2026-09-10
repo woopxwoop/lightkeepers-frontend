@@ -175,12 +175,19 @@
         {/snippet}
       </EmptyState>
     {:else if analyticsPayload && analyticsKey === analyticsCacheKey(analyticsMode, nameId)}
-      {#if analyticsPayload.usage.length === 0}
-        <EmptyState message="No usage history for {characterName} yet." />
-      {:else}
-        <div class="analytics-chart">
-          <UsageSeriesChart points={analyticsPayload.usage} />
-        </div>
+      <div class="analytics-payload" class:is-refreshing={analyticsLoading}>
+        {#if analyticsLoading}
+          <p class="analytics-refresh meta-sub" aria-live="polite">
+            Refreshing…
+          </p>
+        {/if}
+        {#if analyticsPayload.usage.length === 0}
+          <EmptyState message="No usage history for {characterName} yet." />
+        {:else}
+          <div class="analytics-chart">
+            <UsageSeriesChart points={analyticsPayload.usage} />
+          </div>
+        {/if}
         {#if analyticsTeamsByVersion.length > 0}
           <div class="analytics-teams">
             <h2 class="section-title">Top teams by version</h2>
@@ -215,7 +222,7 @@
             {/each}
           </div>
         {/if}
-      {/if}
+      </div>
     {:else}
       <LoadingState variant="pulse" message="Loading usage history…" />
     {/if}
@@ -252,6 +259,18 @@
     letter-spacing: var(--tracking-title);
     text-transform: uppercase;
     color: var(--foreground-color);
+  }
+
+  .analytics-payload {
+    position: relative;
+  }
+
+  .analytics-payload.is-refreshing {
+    opacity: 0.72;
+  }
+
+  .analytics-refresh {
+    margin: 0 0 var(--space-2);
   }
 
   .analytics-chart {

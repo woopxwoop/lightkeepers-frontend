@@ -198,6 +198,51 @@ describe("parseRotationScript", () => {
     assert.notEqual(parsed.body.kind, "act");
   });
 
+  it("appends empty alternative for if/else-if without plain else", () => {
+    const script = `
+active hutao;
+for let i=0; i<4; i=i+1 {
+  if .hutao.skill.ready {
+    hutao skill;
+  } else if .hutao.burst.ready {
+    hutao burst;
+  }
+  hutao attack;
+}
+`;
+    const parsed = parseRotationScript(script);
+    assert.ok(parsed);
+
+    function findAlt(pat: ScriptPat): Extract<ScriptPat, { kind: "alt" }> | null {
+      if (pat.kind === "alt") return pat;
+      if (pat.kind === "seq") {
+        for (const item of pat.items) {
+          const found = findAlt(item);
+          if (found) return found;
+        }
+      }
+      return null;
+    }
+
+    const alt = findAlt(parsed.body);
+    assert.ok(alt);
+    assert.equal(alt.items.length, 3);
+    assert.deepEqual(alt.items[2], { kind: "seq", items: [] });
+
+    const events = [
+      ...stamp(0, [["HuTao", "attack"]]),
+      ...stamp(1, [["HuTao", "attack"]]),
+      ...stamp(2, [["HuTao", "attack"]]),
+      ...stamp(3, [["HuTao", "attack"]]),
+    ];
+    const match = matchScriptLoops(events, script, ["HuTao"]);
+    assert.ok(match);
+    assert.deepEqual(
+      match.starts.map((t) => Math.round(t)),
+      [0, 1, 2, 3],
+    );
+  });
+
   it("keeps on-field actions before the for as setup", () => {
     const parsed = parseRotationScript(GAMING_SCRIPT);
     assert.ok(parsed);

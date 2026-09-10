@@ -149,4 +149,36 @@ describe("parseRotationSample", () => {
       null,
     );
   });
+
+  it("returns null when events exceed the rotation event cap", () => {
+    const events = Array.from({ length: 4097 }, (_, i) => ({
+      t: i,
+      char: "HuTao",
+      action: "skill",
+    }));
+    assert.equal(
+      parseRotationSample({ ...validRotation, events }),
+      null,
+    );
+  });
+
+  it("skips malformed events, sorts by t, and normalizes unknown actions", () => {
+    const sample = parseRotationSample({
+      ...validRotation,
+      events: [
+        { t: 2, char: "Xingqiu", action: "burst" },
+        null,
+        { t: 1, char: "HuTao", action: "mystery" },
+        { t: "nope", char: "HuTao", action: "skill" },
+        { t: 0, char: "", action: "skill" },
+        { t: 0.5, char: "HuTao", action: "skill" },
+      ],
+    });
+    assert.ok(sample);
+    assert.deepEqual(sample!.events, [
+      { t: 0.5, char: "HuTao", action: "skill" },
+      { t: 1, char: "HuTao", action: "other" },
+      { t: 2, char: "Xingqiu", action: "burst" },
+    ]);
+  });
 });

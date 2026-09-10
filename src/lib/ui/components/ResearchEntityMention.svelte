@@ -1,8 +1,8 @@
 <script lang="ts">
   /**
    * Quiet inline research entity (icon + label) with Builds-style tooltips.
-   * Native button trigger so HoverTooltip is keyboard-focusable (Enter/Space);
-   * character deep-links live inside the tip.
+   * When href is available the root is a link; otherwise a button so HoverTooltip
+   * stays keyboard-focusable. Tip body stays non-interactive.
    */
   import {
     entityHref,
@@ -18,6 +18,7 @@
   let icon = $derived(entityIconUrl(entity));
   let href = $derived(entityHref(entity));
   let description = $derived(entity.description?.trim() || "");
+  let triggerTag = $derived(href ? "a" : "button");
 
   let useWeaponTip = $derived(
     entity.type === "weapon" && Boolean(entity.weapon_key),
@@ -27,8 +28,10 @@
   );
 </script>
 
-<button
-  type="button"
+<svelte:element
+  this={triggerTag}
+  href={href || undefined}
+  type={href ? undefined : "button"}
   class="research-entity group relative research-entity-{entity.type}"
 >
   {#if icon}
@@ -55,16 +58,13 @@
         </div>
       {/if}
       {#if href}
-        <a
-          class="tip-detail-text tip-detail-text--small mt-1.5 research-entity-page-link"
-          {href}
-        >
+        <div class="tip-detail-text tip-detail-text--small mt-1.5 research-entity-page-hint">
           View on character page
-        </a>
+        </div>
       {/if}
     </HoverTooltip>
   {/if}
-</button>
+</svelte:element>
 
 <style>
   .research-entity {
@@ -82,6 +82,7 @@
     white-space: nowrap;
     background: transparent;
     border: 0;
+    text-decoration: none;
   }
 
   .research-entity:hover .research-entity-label,
@@ -112,14 +113,7 @@
     font-weight: 500;
   }
 
-  .research-entity-page-link {
-    display: inline-block;
+  .research-entity-page-hint {
     color: color-mix(in srgb, var(--background-color) 88%, transparent);
-    text-decoration: underline;
-    text-underline-offset: 0.12em;
-  }
-
-  .research-entity-page-link:hover {
-    color: var(--background-color);
   }
 </style>

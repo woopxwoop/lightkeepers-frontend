@@ -37,7 +37,7 @@
     border-color: color-mix(in srgb, var(--foreground-color) 32%, transparent);
   }
 
-  .chip:active:not(:disabled) {
+  .chip:active:not(:disabled):not(.chip-active) {
     background: color-mix(in srgb, var(--foreground-color) 12%, transparent);
     border-color: color-mix(in srgb, var(--foreground-color) 40%, transparent);
   }

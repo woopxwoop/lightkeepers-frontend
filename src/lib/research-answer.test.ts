@@ -207,6 +207,17 @@ describe("research answer embeddings", () => {
     );
   });
 
+  it("orderCitationsForDisplay dedupes trailing citation list entries", () => {
+    const ordered = orderCitationsForDisplay(
+      [cite2297, cite2297],
+      "No inline cites.",
+    );
+    assert.deepEqual(
+      ordered.map((c) => c.id),
+      [2297],
+    );
+  });
+
   it("citationShortLabel prefers heading leaf", () => {
     assert.equal(citationShortLabel(cite2297), "KeqingMains · C1");
   });

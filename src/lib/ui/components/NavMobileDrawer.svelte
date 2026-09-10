@@ -12,13 +12,16 @@
   import { DISCORD_INVITE_URL } from "$lib/site";
   import { acquireBodyScrollLock } from "$lib/ui/body-scroll-lock";
   import {
-    isPathActive,
+    isMainLinkActive,
+    isSettingsPage,
+    isToolLinkActive,
+    isToolsPage,
     mainLinks,
     patchNotesPath,
     settingsLinks,
     settingsPath,
+    settingsTabFromSearch,
     toolsLinks,
-    toolsPrefixPath,
     type MainLink,
     type ToolsLink,
   } from "$lib/ui/nav-links";
@@ -38,20 +41,16 @@
   let closedByNavigation = false;
 
   function isMainActive(link: MainLink): boolean {
-    return isPathActive(page.url.pathname, link.path, link.match);
+    return isMainLinkActive(page.url.pathname, link);
   }
 
   function isToolActive(link: ToolsLink): boolean {
-    return isPathActive(page.url.pathname, link.path, link.match);
+    return isToolLinkActive(page.url.pathname, link);
   }
 
-  const onToolsPage = $derived(
-    isPathActive(page.url.pathname, toolsPrefixPath, "prefix"),
-  );
+  const onToolsPage = $derived(isToolsPage(page.url.pathname));
 
-  const onSettingsPage = $derived(
-    isPathActive(page.url.pathname, settingsPath, "prefix"),
-  );
+  const onSettingsPage = $derived(isSettingsPage(page.url.pathname));
 
   $effect(() => {
     // Include search so Settings ?tab= changes close the mobile drawer too.
@@ -217,9 +216,6 @@
           class="drawer-item"
           class:is-active={isMainActive(link)}
           style="--i: {toolsLinks.length + 1 + i}"
-          data-sveltekit-preload-data={"preload" in link
-            ? link.preload
-            : undefined}
           aria-current={isMainActive(link) ? "page" : undefined}
         >
           <span class="drawer-item-label">{link.label}</span>
@@ -259,7 +255,7 @@
           inert={!settingsDrawerExpanded}
         >
           {#each settingsLinks as link, i}
-            {@const activeTab = page.url.searchParams.get("tab") ?? "roster"}
+            {@const activeTab = settingsTabFromSearch(page.url.searchParams)}
             {@const subActive = onSettingsPage && activeTab === link.tab}
             <a
               href={link.path}

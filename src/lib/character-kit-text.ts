@@ -9,7 +9,7 @@
 
 /** Trailing Hexerei / Polestar Field section (Hoyoverse `\\n` or real newlines). */
 export const ENHANCE_TAIL = new RegExp(
-  "((?:\\\\n|\\n|\\r)+((?:<color=[^>]+>)?(?:Hexerei|Radiance:\\s*Stellar-Conduct|Polestar Field)\\b[\\s\\S]*))$",
+  "((?:\\\\r\\\\n|\\\\n|\\\\r|\\n|\\r)+((?:<color=[^>]+>)?(?:Hexerei|Radiance:\\s*Stellar-Conduct|Polestar Field)\\b[\\s\\S]*))$",
   "i",
 );
 

@@ -453,12 +453,7 @@ export async function ensureStaticBoards(opts?: {
   force?: boolean;
 }): Promise<void> {
   if (opts?.force) {
-    if (staticBoardsRetryTimer) {
-      clearTimeout(staticBoardsRetryTimer);
-      staticBoardsRetryTimer = null;
-    }
-    staticBoardsRetryAfterMs = 0;
-    staticBoardsRetryAttempt = 0;
+    clearStaticBoardsRetry();
   }
   if (staticBoardsMatchCurrentVersions()) return;
   // Backoff after a stale/failed fetch — skip whether boards loaded or not.

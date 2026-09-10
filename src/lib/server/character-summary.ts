@@ -25,6 +25,16 @@ const EMPTY_LIQUID: CharacterLiquidSubstats = {
   ranked: [],
 };
 
+function cancelUpstreamBody(res: Response): void {
+  try {
+    void res.body?.cancel()?.catch(() => {
+      /* ignore async cancel failures; preserve original error path */
+    });
+  } catch {
+    /* ignore sync cancel failures; preserve original error path */
+  }
+}
+
 /** No sim/guide body — merge tombstone, not a stale-but-present summary. */
 export function isSummaryTombstone(
   summary: CharacterIndex | null | undefined,
@@ -152,6 +162,7 @@ async function loadSummaryFromCdn(
     return null;
   }
   if (!res.ok) {
+    cancelUpstreamBody(res);
     throw new Error(
       `character summary ${goodKey} unavailable: HTTP ${res.status}`,
     );
@@ -173,6 +184,14 @@ async function loadSummaryFromCdn(
     parsed = JSON.parse(raw);
   } catch {
     throw new Error(`character summary ${goodKey}: invalid JSON`);
+  }
+
+  if (
+    parsed === null ||
+    typeof parsed !== "object" ||
+    Array.isArray(parsed)
+  ) {
+    throw new Error(`character summary ${goodKey}: invalid payload`);
   }
 
   const summary = liveCharacterSummary(parsed as CharacterIndex);

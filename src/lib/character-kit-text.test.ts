@@ -35,6 +35,15 @@ describe("enhanceExtra", () => {
     });
   });
 
+  it("extracts a Hexerei tail separated by escaped carriage returns", () => {
+    const enhanced =
+      "Rewritten opener.\\r\\rHexerei\\rGrants a buff.";
+    assert.deepEqual(enhanceExtra("Original base.", enhanced), {
+      mode: "extra",
+      text: "Hexerei\\rGrants a buff.",
+    });
+  });
+
   it("extracts a Polestar Field tail and discards prose before the heading", () => {
     const enhanced =
       "Some unrelated rewrite.\\n\\nPolestar Field\\nField effect text.";

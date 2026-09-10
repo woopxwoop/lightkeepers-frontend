@@ -24,7 +24,7 @@
   </ol>
   {#if (trace.retrieved_preview ?? []).length > 0}
     <ul class="trace-preview">
-      {#each trace.retrieved_preview ?? [] as hit (hit.chunk_id)}
+      {#each trace.retrieved_preview ?? [] as hit, i (i)}
         <li>
           <span class="trace-hit-publisher">{hit.publisher}</span>
           <span class="trace-hit-meta">{hit.chunk_kind} · {hit.source_tier}</span>

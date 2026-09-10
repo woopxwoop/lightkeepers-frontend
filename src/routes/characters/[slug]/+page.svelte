@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import { resolve } from "$app/paths";
   import { dev } from "$app/environment";
   import { animationsEnabled, charactersOwned } from "$lib/stores";
@@ -144,7 +144,15 @@
     } catch {
       // Keep the raw hash when it is not valid URI encoding.
     }
-    if (hash.startsWith("#kit-")) selectTab("skills");
+    if (!hash.startsWith("#kit-")) return;
+    selectTab("skills");
+    const id = hash.slice(1);
+    void tick().then(() => {
+      document.getElementById(id)?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    });
   });
 </script>
 

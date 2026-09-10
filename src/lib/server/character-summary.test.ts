@@ -37,6 +37,11 @@ describe("liveCharacterSummary", () => {
     assert.deepEqual(liveCharacterSummary(stale), stale);
   });
 
+  it("returns null for null and undefined without throwing", () => {
+    assert.equal(liveCharacterSummary(null), null);
+    assert.equal(liveCharacterSummary(undefined), null);
+  });
+
   it("normalizes missing main_stats and liquid for legacy payloads", () => {
     const legacy = {
       key: "Legacy",

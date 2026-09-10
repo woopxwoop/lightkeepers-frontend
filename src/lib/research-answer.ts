@@ -66,7 +66,9 @@ export function orderCitationsForDisplay(
   }
 
   for (const cite of citations) {
-    if (!seen.has(cite.id)) ordered.push(cite);
+    if (seen.has(cite.id)) continue;
+    seen.add(cite.id);
+    ordered.push(cite);
   }
   return ordered;
 }
